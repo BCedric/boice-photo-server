@@ -18,6 +18,8 @@
     "cors": "^2.8.4",
     "cors-prefetch-middleware": "^1.0.0",
     "express": "^4.16.2",
+    "file-system": "^2.2.2",
+    "graceful-fs": "^4.1.11",
     "image-size": "^0.6.1",
     "imagemin": "^5.3.1",
     "imagemin-jpegoptim": "^5.1.0",
