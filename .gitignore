@@ -1,0 +1,5 @@
+/dist
+/img
+/imgBrut
+/node_modules
+package-lock.json
