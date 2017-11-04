@@ -1,0 +1,12 @@
+CREATE TABLE `Galleries` (
+	`name`	TEXT,
+	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE
+);
+
+CREATE TABLE `Pictures` (
+	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+	`name`	TEXT,
+	`adresse`	TEXT,
+	`height`	INTEGER,
+	`width`	INTEGER
+);
