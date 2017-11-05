@@ -4,6 +4,7 @@ import assign from 'lodash'
 import sqlite3 from 'sqlite3'
 import sizeOf from 'image-size';
 import queries from '../utils/queries'
+import treatError from '../utils/treatError'
 
 var db = new sqlite3.Database('boicephoto.sqlite');
 let UpdateDbRouter = express.Router();
@@ -34,27 +35,16 @@ const readFilesSaveDB = folder => {
           const gallerieName = relative.substring(0, relative.indexOf('/'))
           db.get(queries.getGalleryByName, {$name: gallerieName}, (e, row) => {
             treatError(e);
-            console.log("row", row);
             options.gallery_id = row.id
             db.run(queries.postPicture(options), (e) => treatError(e))
           })
         } else {
-          console.log(queries.postPicture(options));
           db.run(queries.postPicture(options), (e) => treatError(e))
         }
-
-
-
       }
     })
-
     console.log(filepath, relative, filename);
-
   })
-}
-
-const treatError = e => {
-  if(e !== null) console.log(e);
 }
 
 UpdateDbRouter.route('/updatedb')

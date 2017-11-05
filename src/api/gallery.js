@@ -1,50 +1,60 @@
 import express from 'express'
 import sqlite3 from 'sqlite3'
-import { merge } from 'lodash'
+import fs from 'file-system'
+import { forEach, map, merge } from 'lodash'
 
-let PictureRouter = express.Router();
+import config from '../utils/config'
+import queries from '../utils/queries'
+import treatError from '../utils/treatError'
 
+let GalleryRouter = express.Router();
 let db = new sqlite3.Database('boicephoto.sqlite');
 
-let queries = {
-  get:  "SELECT * FROM Galleries WHERE id = $id",
-  put : "UPDATE Pictures SET name = $name WHERE id = $id",
-  delete : "DELETE FROM Pictures WHERE id = $id",
-  post : "INSERT INTO Pictures (name) VALUES ($name)",
-  all : "SELECT * FROM Pictures"
-}
-
-PictureRouter.route('/picture/:pictureId')
+GalleryRouter.route('/gallery/:galleryId')
 .get(function(req,res){
-  db.get(queries.get,  {$id: req.params.pictureId}, function(err, row) {
-    res.json({picture : row});
+  db.get(queries.getGallery,  {$id: req.params.galleryId}, function(err, row) {
+    if(row !== undefined) db.all(queries.getPicturesByGallery, {$gallery_id: row.id}, (err, rows) => {
+      res.json({pictures: map(rows, row => ({addr:'/picture/'+row.id, height: row.height, width: row.width}))})
+    })
+    else res.json({message: "no galerie"})
   })
+  // db.close()
 })
 
-.put(function(req,res){
-  db.run( queries.put, {$name: req.query.name, $id: req.params.pictureId})
-  db.close()
-  res.json({message: "update OK"})
-})
+// .put(function(req,res){
+//   db.run( queries.put, {$name: req.query.name, $id: req.params.pictureId})
+//   db.close()
+//   res.json({message: "update OK"})
+// })
 
-.post(function(req,res){
-  db.run( queries.post, { $name: req.query.name })
-  db.close()
-  res.json({message: "Insert OK"})
-})
+// .post(function(req,res){
+//   db.run( queries.post, { $name: req.query.name })
+//   db.close()
+//   res.json({message: "Insert OK"})
+// })
 
 .delete(function(req,res){
-  db.run(queries.delete, {$id: req.params.pictureId})
-  db.close()
+    db.get(queries.getGallery,  {$id: req.params.galleryId}, function(err, galleryRow) {
+      if(galleryRow.id !== undefined) db.all(queries.getPicturesByGallery, {$gallery_id: galleryRow.id}, (err, pictureRows) => {
+        forEach(pictureRows, pictureRow => {
+          db.run(queries.deletePicture, {$id: pictureRow.id})
+          fs.unlinkSync('dist/'+pictureRow.adresse)
+        })
+        fs.rmdirSync(config.imageFolder+galleryRow.name)
+      })
+    })
+
+  db.run(queries.deleteGallery, {$id: req.params.galleryId})
+  // db.close()
   res.json({message: "Delete OK"})
 })
 
-PictureRouter.route('/pictures')
-.get(function(req, res){
-  db.all(queries.all, function(err, rows) {
-    res.json({pictures: rows})
+GalleryRouter.route('/galleries')
+.all((req,res) => {
+  db.get(queries.allGalleries, err, rows => {
+    res.json({galleries: rows})
   })
 })
 
 
-export default PictureRouter
+export default GalleryRouter

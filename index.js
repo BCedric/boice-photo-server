@@ -1,6 +1,7 @@
 import express from 'express'
 import PictureRouter from './src/api/picture'
 import UpdateDbRouter from './src/api/updateDb'
+import GalleryRouter from './src/api/gallery'
 import corsPrefetch from 'cors-prefetch-middleware';
 import cors from 'cors'
 
@@ -17,5 +18,6 @@ app.get('/', function(req, res) {
 
 app.use(PictureRouter);
 app.use(UpdateDbRouter)
+app.use(GalleryRouter)
 
 app.listen(8080);
