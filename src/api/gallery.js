@@ -14,7 +14,7 @@ GalleryRouter.route('/gallery/:galleryId')
 .get(function(req,res){
   db.get(queries.getGallery,  {$id: req.params.galleryId}, function(err, row) {
     if(row !== undefined) db.all(queries.getPicturesByGallery, {$gallery_id: row.id}, (err, rows) => {
-      res.json({pictures: map(rows, row => ({addr:'/picture/'+row.id, height: row.height, width: row.width}))})
+      res.json({pictures: map(rows, row => ({addr:'/picture/'+row.id, height: row.height, width: row.width})), description: row.description})
     })
     else res.json({message: "no galerie"})
   })
@@ -51,7 +51,7 @@ GalleryRouter.route('/gallery/:galleryId')
 
 GalleryRouter.route('/galleries')
 .all((req,res) => {
-  db.get(queries.allGalleries, err, rows => {
+  db.all(queries.allGalleries, (err, rows) => {
     res.json({galleries: rows})
   })
 })

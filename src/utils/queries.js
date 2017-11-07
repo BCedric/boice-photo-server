@@ -10,7 +10,7 @@ const queries = {
   allPictures : "SELECT * FROM Pictures",
   deleteTable: (table) => "DROP TABLE " + table + ";",
   createTablePictures: "CREATE TABLE `Pictures` (`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`name`	TEXT,`adresse`	TEXT,`height`	INTEGER,`width`	INTEGER, `gallery_id`	INTEGER, FOREIGN KEY(`gallery_id`) REFERENCES `Galleries`(`id`));",
-  createTableGalleries: "CREATE TABLE `Galleries` (`name`	TEXT,`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE);",
+  createTableGalleries: "CREATE TABLE `Galleries` (`name`	TEXT,`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`description`	TEXT, `parent_id`	INTEGER);",
   getGallery: "SELECT * FROM Galleries WHERE id = $id",
   getGalleryByName: "SELECT * FROM Galleries WHERE name = $name",
   postGallery: "INSERT INTO Galleries (name) VALUES ($name)",

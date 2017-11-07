@@ -55,18 +55,6 @@ PictureRouter.route('/picture/:pictureId')
     let fileName = originalFilename;
     console.log(fileName, files.imageFiles);
   })
-
-  // imagemin(['imgBrut/*.{jpg,png}'], 'img', {
-  // 	plugins: [
-  // 		imageminJpegoptim([true, 30]),
-  // 		imageminPngquant({quality: '65-80'})
-	//    ]
-  // }).then(files => {
-  // 	console.log(files);
-  // 	//=> [{data: <Buffer 89 50 4e …>, path: 'build/images/foo.jpg'}, …]
-  // })
-
-  // return res.json({message: "photo added"})
 })
 
 .delete(function(req,res){
