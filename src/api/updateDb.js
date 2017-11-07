@@ -9,20 +9,16 @@ import treatError from '../utils/treatError'
 var db = new sqlite3.Database('boicephoto.sqlite');
 let UpdateDbRouter = express.Router();
 
-const readFilesSaveDB = folder => {
+const readFilesSaveDB = (folder) => {
   var galleries = []
   fs.recurse(folder, (filepath, relative, filename) => {
     if(filename === undefined) {
-      galleries.push(relative)
-      db.run( queries.postGallery, {$name: relative})
-
+      galleries.push(relative.substr(relative.lastIndexOf('/')+1))
+      db.run( queries.postGallery, {$name: relative.substr(relative.lastIndexOf('/')+1)})
     }
   })
-
   fs.recurse(folder, (filepath, relative, filename) => {
-    var galleries
     db.all(queries.allGalleries, (e, rows) => {
-      rows
       if(filename !== undefined) {
         var dimensions = sizeOf(filepath);
         var options = {
@@ -32,7 +28,8 @@ const readFilesSaveDB = folder => {
           height: dimensions.height
         }
         if(relative.includes("/")) {
-          const gallerieName = relative.substring(0, relative.indexOf('/'))
+          var gallerieName = relative.slice(0, relative.lastIndexOf('/'))
+          while(gallerieName.lastIndexOf('/') !== -1) gallerieName = gallerieName.slice(gallerieName.lastIndexOf('/')+1, gallerieName.length)
           db.get(queries.getGalleryByName, {$name: gallerieName}, (e, row) => {
             treatError(e);
             options.gallery_id = row.id
@@ -41,6 +38,10 @@ const readFilesSaveDB = folder => {
         } else {
           db.run(queries.postPicture(options), (e) => treatError(e))
         }
+      } else if (relative.includes("/")){
+        const $parentName = relative.slice(0, relative.lastIndexOf('/'))
+        const $galleryName = relative.slice(relative.lastIndexOf('/') + 1, relative.length)
+        db.run(queries.updateGalleryParentId, {$parentName, $galleryName }, (e) => treatError(e))
       }
     })
     console.log(filepath, relative, filename);
