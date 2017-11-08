@@ -17,8 +17,10 @@ const queries = {
   allGalleries: "SELECT Galleries.* From Galleries, Pictures where Galleries.id = Pictures.gallery_id group by Galleries.id;",
   deleteGallery: "DELETE FROM Galleries WHERE id =$id",
   updateGalleryParentId: "UPDATE Galleries SET parent_id = (SELECT id from Galleries WHERE name = $parentName) WHERE name = $galleryName;",
-  getGalleriesList: (parent_id) => "SELECT * FROM Galleries WHERE parent_id == '" + parent_id + "';",
-  allGalleriesLists: "SELECT * FROM Galleries WHERE parent_id is null AND id NOT IN (SELECT Galleries.id FROM Galleries, Pictures WHERE parent_id IS NULL AND Galleries.id = (SELECT id FROM Pictures) GROUP BY Galleries.id)"
+  getGalleriesList: (parent_id) => "SELECT g1.name as parent_name, g2.* FROM Galleries as g1, Galleries as g2 WHERE g2.parent_id == "+parent_id+" AND g2.parent_id = g1.id GROUP BY g2.id;",
+  allGalleriesLists: "SELECT * FROM Galleries WHERE parent_id is null AND id NOT IN (SELECT Galleries.id FROM Galleries, Pictures WHERE parent_id IS NULL AND Galleries.id = (SELECT id FROM Pictures) GROUP BY Galleries.id)",
+  getRandomPictureFromGallerie: id => "SELECT * FROM Pictures WHERE gallery_id = '" + id + "' AND Pictures.height < Pictures.width ORDER BY random() Limit 1",
+  getGalleriesListOfGallery: id => "SELECT * FROM Galleries WHERE parent_id = (SELECT parent_id FROM Galleries WHERE id = " + id + ")"
 }
 
 export default queries
