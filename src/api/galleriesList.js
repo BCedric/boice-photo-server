@@ -21,7 +21,7 @@ GalleriesListRouter.route('/gallerieslist/:gallerieslist')
           galleries.push(row)
         })
       })
-      setTimeout(() => res.json({galleries, name: rows[0].parent_name}), 450);
+      setTimeout(() => res.json({galleries, name: rows[0].parent_name, id: rows[0].id}), 450);
   })
 })
 
