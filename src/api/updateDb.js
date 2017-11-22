@@ -19,19 +19,20 @@ const readFilesSaveDB = (folder, res) => {
     }
   })
   fs.recurse(folder, (filepath, relative, filename) => {
+
     db.all(queries.allGalleries, (e, rows) => {
-      if(filename !== undefined) {
+      if(filename !== undefined && filename !== 'description.txt') {
         var dimensions = sizeOf(filepath);
         var options = {
           name: filename,
-          adresse: filepath,
+          adresse: relative,
           width: dimensions.width,
           height: dimensions.height
         }
         if(relative.includes("/")) {
-          var gallerieName = relative.slice(0, relative.lastIndexOf('/'))
-          while(gallerieName.lastIndexOf('/') !== -1) gallerieName = gallerieName.slice(gallerieName.lastIndexOf('/')+1, gallerieName.length)
-          db.get(queries.getGalleryByName, {$name: gallerieName}, (e, row) => {
+          var galleryName = relative.slice(0, relative.lastIndexOf('/'))
+          while(galleryName.lastIndexOf('/') !== -1) galleryName = galleryName.slice(galleryName.lastIndexOf('/')+1, galleryName.length)
+          db.get(queries.getGalleryByName, {$name: galleryName}, (e, row) => {
             treatError(e);
             options.gallery_id = row.id
             db.run(queries.postPicture(options), (e) => treatError(e))
@@ -39,7 +40,15 @@ const readFilesSaveDB = (folder, res) => {
         } else {
           db.run(queries.postPicture(options), (e) => treatError(e))
         }
-      } else if (relative.includes("/")){
+      } else if(filename === 'description.txt') {
+        fs.readFile(filepath, 'utf8', (err, data) => {
+          var galleryName = relative.slice(0, relative.lastIndexOf('/'))
+          while(galleryName.lastIndexOf('/') !== -1) galleryName = galleryName.slice(galleryName.lastIndexOf('/')+1, galleryName.length)
+          db.run(queries.updateGalleriesDescription, {$description: data, $name: galleryName})
+
+        })
+      }
+      else if (relative.includes("/")){
         const $parentName = relative.slice(0, relative.lastIndexOf('/'))
         const $galleryName = relative.slice(relative.lastIndexOf('/') + 1, relative.length)
         db.run(queries.updateGalleryParentId, {$parentName, $galleryName }, (e) => treatError(e))
@@ -47,16 +56,17 @@ const readFilesSaveDB = (folder, res) => {
     })
     console.log(filepath, relative, filename);
   })
+  res.json({update : 'OK'});
 }
 
 UpdateDbRouter.route('/updatedb')
 .get(function(req,res){
   db.run(queries.deleteTable("Pictures"), (e) => {
-    treatError(e)
+    res.json({error: e})
     db.run(queries.deleteTable("Galleries"), (e) => {
-      treatError(e);
+      res.json({error: e})
       db.run(queries.createTableGalleries, (e) => {
-        treatError(e);
+        res.json({error: e})
         db.run(queries.createTablePictures, (e) => {
           readFilesSaveDB(config.imageFolder, res)
         })
