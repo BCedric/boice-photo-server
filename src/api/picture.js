@@ -4,14 +4,14 @@ import multiparty from 'multiparty'
 import queries from '../utils/queries'
 import imagesUpload from '../utils/images-upload'
 import { map } from 'lodash'
-
+import config from '../utils/config.js'
 
 var PictureRouter = express.Router();
 
 var db = new sqlite3.Database('boicephoto.sqlite');
 
 var options = {
-    root: __dirname + '../../../',
+    root: config.imageFolder,
     dotfiles: 'deny',
     headers: {
         'x-timestamp': Date.now(),

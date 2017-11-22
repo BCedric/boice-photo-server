@@ -5,11 +5,12 @@ import sqlite3 from 'sqlite3'
 import sizeOf from 'image-size';
 import queries from '../utils/queries'
 import treatError from '../utils/treatError'
+import config from '../utils/config.js'
 
 var db = new sqlite3.Database('boicephoto.sqlite');
 let UpdateDbRouter = express.Router();
 
-const readFilesSaveDB = (folder) => {
+const readFilesSaveDB = (folder, res) => {
   var galleries = []
   fs.recurse(folder, (filepath, relative, filename) => {
     if(filename === undefined) {
@@ -57,7 +58,7 @@ UpdateDbRouter.route('/updatedb')
       db.run(queries.createTableGalleries, (e) => {
         treatError(e);
         db.run(queries.createTablePictures, (e) => {
-          readFilesSaveDB('img')
+          readFilesSaveDB(config.imageFolder, res)
         })
       })
     })
