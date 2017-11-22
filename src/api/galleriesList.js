@@ -9,19 +9,23 @@ import treatError from '../utils/treatError'
 var db = new sqlite3.Database('boicephoto.sqlite');
 let GalleriesListRouter = express.Router();
 
-GalleriesListRouter.route('/gallerieslist/:gallerieslist')
-.get(function(req,res) {
 
+GalleriesListRouter.route('/gallerieslist/:gallerieslist')
+
+.get(function(req,res) {
+  var description
+  db.get(queries.getGallery, {$id: req.params.gallerieslist}, function(err, row) {
+    description = row.description
+  })
   db.all(queries.getGalleriesList(req.params.gallerieslist), function(err, rows) {
-    let galleries = []
-      console.log('rows', rows);
-      forEach(rows, row => {
-        db.each(queries.getRandomPictureFromGallerie(row.id), (err, rowImg) => {
-          row.randPicture = '/picture/'+rowImg.id
-          galleries.push(row)
-        })
+    var galleries = []
+    forEach(rows, (row, index) => {
+      db.each(queries.getRandomPictureFromGallerie(row.id), (err, rowImg) => {
+        row.randPicture = '/picture/'+rowImg.id
+        galleries.push(row)
+        index === rows.length - 1 && res.json({galleries, description})
       })
-      setTimeout(() => res.json({galleries, name: rows[0].parent_name, id: rows[0].id}), 450);
+    })
   })
 })
 
