@@ -1,6 +1,6 @@
 import express from 'express'
 import fs from 'file-system'
-import assign from 'lodash'
+import {assign} from 'lodash'
 import sqlite3 from 'sqlite3'
 import sizeOf from 'image-size';
 import queries from '../utils/queries'

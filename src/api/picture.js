@@ -1,10 +1,6 @@
 import express from 'express'
 import sqlite3 from 'sqlite3'
-import imagemin from 'imagemin'
 import multiparty from 'multiparty'
-import imageminJpegoptim from 'imagemin-jpegoptim'
-import imageminPngquant from 'imagemin-pngquant'
-
 import queries from '../utils/queries'
 import imagesUpload from '../utils/images-upload'
 import { map } from 'lodash'
