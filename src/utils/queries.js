@@ -18,10 +18,11 @@ const queries = {
   deleteGallery: "DELETE FROM Galleries WHERE id =$id",
   updateGalleryParentId: "UPDATE Galleries SET parent_id = (SELECT id from Galleries WHERE name = $parentName) WHERE name = $galleryName;",
   getGalleriesList: (parent_id) => "SELECT g1.name as parent_name, g2.* FROM Galleries as g1, Galleries as g2 WHERE g2.parent_id == "+parent_id+" AND g2.parent_id = g1.id GROUP BY g2.id;",
-  allGalleriesLists: "SELECT * FROM Galleries WHERE parent_id is null AND id NOT IN (SELECT Galleries.id FROM Galleries, Pictures WHERE parent_id IS NULL AND Galleries.id = (SELECT id FROM Pictures) GROUP BY Galleries.id)",
+  allGalleriesLists: "Select * From Galleries WHERE Galleries.parent_id IS NULL AND Galleries.id NOT IN (SELECT Galleries.id FROM Galleries, Pictures WHERE parent_id IS NULL AND Galleries.id = Pictures.gallery_id GROUP BY Galleries.id)",
   getRandomPictureFromGallerie: id => "SELECT * FROM Pictures WHERE gallery_id = '" + id + "' AND Pictures.height < Pictures.width ORDER BY random() Limit 1",
-  getGalleriesListOfGallery: id => "SELECT * FROM Galleries WHERE parent_id = (SELECT parent_id FROM Galleries WHERE id = " + id + ")",
-  getGalleriesNotInLists: 'SELECT * FROM GALLERIES WHERE parent_id IS NULL AND id NOT IN (SELECT parent_id FROM Galleries WHERE parent_id IS NOT NULL)'
+  getGalleriesListOfGallery: id => "SELECT * FROM Galleries WHERE parent_id = (SELECT parent_id FROM Galleries WHERE id = " + id + ") ORDER BY id",
+  getGalleriesNotInLists: 'SELECT * FROM GALLERIES WHERE parent_id IS NULL AND id NOT IN (SELECT parent_id FROM Galleries WHERE parent_id IS NOT NULL)',
+  updateGalleriesDescription: 'UPDATE Galleries SET description = $description WHERE name = $name'
 }
 
 export default queries
