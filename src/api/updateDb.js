@@ -62,18 +62,17 @@ const readFilesSaveDB = (folder, res) => {
 UpdateDbRouter.route('/updatedb')
 .get(function(req,res){
   db.run(queries.deleteTable("Pictures"), (e) => {
-    res.json({error: e})
+    // res.json({error: e})
     db.run(queries.deleteTable("Galleries"), (e) => {
-      res.json({error: e})
+      // res.json({error: e})
       db.run(queries.createTableGalleries, (e) => {
-        res.json({error: e})
+        // res.json({error: e})
         db.run(queries.createTablePictures, (e) => {
           readFilesSaveDB(config.imageFolder, res)
         })
       })
     })
   })
-  res.json({update : 'OK'});
 })
 
 

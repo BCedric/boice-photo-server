@@ -18,12 +18,13 @@ GalleriesListRouter.route('/gallerieslist/:gallerieslist')
     description = row.description
   })
   db.all(queries.getGalleriesList(req.params.gallerieslist), function(err, rows) {
+
     var galleries = []
     forEach(rows, (row, index) => {
       db.each(queries.getRandomPictureFromGallerie(row.id), (err, rowImg) => {
         row.randPicture = '/picture/'+rowImg.id
         galleries.push(row)
-        index === rows.length - 1 && res.json({galleries, description})
+        galleries.length === rows.length && res.json({galleries, description, name: rows[0].parent_name, id: rows[0].parent_id})
       })
     })
   })
