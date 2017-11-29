@@ -45,5 +45,5 @@ gulp.task('default', function () {
 
 gulp.task('build', function () {
   gulp.start('babel')
-  gulp.start('compress')
+  // gulp.start('compress')
 })
