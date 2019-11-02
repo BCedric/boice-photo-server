@@ -1,12 +1,10 @@
 import express from 'express'
-import lodash from 'lodash'
 import sqlite3 from 'sqlite3'
 import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
 
 var db = new sqlite3.Database('boicephoto.sqlite');
 let GalleriesListRouter = express.Router();
-const { forEach, map } = lodash
 
 GalleriesListRouter.route('/gallerieslist/:gallerieslist')
   .get(async function (req, res) {

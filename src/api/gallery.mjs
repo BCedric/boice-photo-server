@@ -2,30 +2,15 @@ import express from 'express'
 import sqlite3 from 'sqlite3'
 import fs from 'file-system'
 import path from 'path'
-import lodash from 'lodash'
 import sizeOf from 'image-size';
 
 import config from '../utils/config'
 import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
+import { galleryPathConstructor } from '../utils/gallery-path-constructor.mjs'
 
 let GalleryRouter = express.Router();
 let db = new sqlite3.Database('boicephoto.sqlite');
-const { map } = lodash
-
-const galleryPathConstructor = gallery => new Promise(async (resolve, reject) => {
-  try {
-    if (gallery.parent_id == null) {
-      resolve(gallery.name)
-    } else {
-      const parentGallery = await DB.get(queries.getGallery, { $id: gallery.parent_id })
-      console.log('parentGallery', parentGallery, gallery);
-      resolve(`${await galleryPathConstructor(parentGallery)}/${gallery.name}`)
-    }
-  } catch (error) {
-    reject(error)
-  }
-})
 
 GalleryRouter.route('/gallery/:galleryId')
   .get(async function (req, res) {
@@ -34,7 +19,7 @@ GalleryRouter.route('/gallery/:galleryId')
 
       if (gallery !== undefined) {
         const pictures = await DB.all(queries.getPicturesByGallery, { $gallery_id: gallery.id })
-        res.json({ pictures: map(pictures, picture => ({ addr: '/picture/' + picture.id, height: picture.height, width: picture.width })), description: gallery.description, name: gallery.name, id: gallery.id })
+        res.json({ pictures: pictures.map(picture => ({ addr: '/picture/' + picture.id, height: picture.height, width: picture.width })), description: gallery.description, name: gallery.name, id: gallery.id })
       }
       else res.json({ message: "la galerie n'existe pas" })
     } catch (err) {
@@ -82,6 +67,7 @@ GalleryRouter.route('/gallery/:galleryId')
 
 
 GalleryRouter.route('/gallery')
+  // body : {name, parentId, file1, file2 ...}
   .post(async function (req, res) {
     try {
       const { name: galleryName, parentId } = req.fields
@@ -98,7 +84,7 @@ GalleryRouter.route('/gallery')
         Object.values(req.files).forEach(file => {
           const { name: pictureName } = file
           fs.copyFileSync(file.path, `${galleryPath}/${pictureName}`)
-          var { width, height } = sizeOf(file.path);
+          const { width, height } = sizeOf(file.path)
           const pictureAddress = path.normalize(`${path.relative(config.imageFolder, galleryPath)}/${pictureName}`)
           DB.run(queries.postPicture({ name: pictureName, adresse: pictureAddress, width, height, gallery_id: gallery.id }))
 
