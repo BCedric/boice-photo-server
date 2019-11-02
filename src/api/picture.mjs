@@ -1,5 +1,4 @@
 import express from 'express'
-import lodash from 'lodash'
 import path from 'path'
 import fs from 'file-system'
 import sizeOf from 'image-size';
@@ -9,7 +8,6 @@ import config from '../utils/config.mjs'
 import DB from '../shared/db.mjs'
 import { galleryPathConstructor } from '../utils/gallery-path-constructor.mjs'
 
-const { map } = lodash
 var PictureRouter = express.Router();
 
 var options = {
@@ -91,7 +89,7 @@ PictureRouter.route('/pictures')
   .get(async function (req, res) {
     try {
       const pictures = await DB.all(queries.allPictures)
-      res.json({ pictures: map(pictures, picture => ({ addr: '/picture/' + picture.id, height: picture.height, width: picture.width })) })
+      res.json({ pictures: pictures.map(picture => ({ addr: '/picture/' + picture.id, height: picture.height, width: picture.width })) })
     } catch (err) {
       res.json({ err })
     }

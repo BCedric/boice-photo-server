@@ -22,7 +22,6 @@
     "graceful-fs": "^4.1.11",
     "image-size": "^0.6.1",
     "images-upload-middleware": "^1.1.1",
-    "lodash": "^4.17.4",
     "nodemailer": "^4.4.0",
     "pump": "^1.0.3",
     "request": "^2.83.0",
