@@ -24,22 +24,26 @@ const addGallery = async (galleryName, parentGalleryName) =>
   })
 
 const addPicture = (pictureName, picturePath, parentGalleryName) => new Promise(async (resolve, reject) => {
-  const adresse = path.relative(config.imageFolder, picturePath)
-  var dimensions = sizeOf(picturePath);
-  var options = {
-    name: pictureName,
-    adresse,
-    width: dimensions.width,
-    height: dimensions.height,
-  }
+  try {
+    const adresse = path.relative(config.imageFolder, picturePath)
+    var dimensions = sizeOf(picturePath);
+    var options = {
+      $name: pictureName,
+      $adresse: adresse,
+      $width: dimensions.width,
+      $height: dimensions.height,
+    }
 
-  if (parentGalleryName != null) {
-    const gallery = await DB.get(queries.getGalleryByName, { $name: parentGalleryName })
-    options.gallery_id = gallery.id
-  }
+    if (parentGalleryName != null) {
+      const gallery = await DB.get(queries.getGalleryByName, { $name: parentGalleryName })
+      options.$galleryId = gallery.id
+    }
 
-  await DB.run(queries.postPicture(options))
-  resolve(null)
+    await DB.run(queries.postPicture, options)
+    resolve(null)
+  } catch (error) {
+    reject(error)
+  }
 })
 
 const getFileStat = async path =>
@@ -84,13 +88,15 @@ const readFilesSaveDB = async (folder) => {
 UpdateDbRouter.route('/updatedb')
   .get(async function (req, res) {
     try {
-      await DB.run(queries.deleteTable("Pictures"))
-      await DB.run(queries.deleteTable("Galleries"))
+      await DB.run(queries.deleteTable('Pictures'))
+      await DB.run(queries.deleteTable('Galleries'))
       await DB.run(queries.createTableGalleries)
       await DB.run(queries.createTablePictures)
       readFilesSaveDB(config.imageFolder)
       res.json({ update: 'OK' });
     } catch (err) {
+      console.log(err);
+
       res.json({ err })
     }
   })

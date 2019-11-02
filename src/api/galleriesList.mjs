@@ -12,17 +12,17 @@ GalleriesListRouter.route('/gallerieslist/:gallerieslist')
       const gallery = await DB.get(queries.getGallery, { $id: req.params.gallerieslist })
 
       const description = gallery.description
-      const galleriesChildren = await DB.all(queries.getGalleriesList(req.params.gallerieslist))
+      const galleriesChildren = await DB.all(queries.getGalleriesList, { $parentId: req.params.gallerieslist })
 
       var galleries = []
       galleriesChildren.forEach(
         async galleryChild => {
-          const randPicture = await DB.get(queries.getRandomPictureFromGallerie(galleryChild.id))
+          const randPicture = await DB.get(queries.getRandomPictureFromGallerie, { $id: galleryChild.id })
           if (randPicture != null) {
             galleryChild.randPicture = '/picture/' + randPicture.id
           }
           galleries.push(galleryChild)
-          galleries.length === galleriesChildren.length && res.json({ galleries, description, name: galleriesChildren[0].parent_name, id: galleriesChildren[0].parent_id })
+          galleries.length === galleriesChildren.length && res.json({ galleries, description, name: galleriesChildren[0].parent_name, id: galleriesChildren[0].parentId })
         }
       )
     } catch (err) {
@@ -43,10 +43,14 @@ GalleriesListRouter.route('/gallerieslists')
 
 // return brothers of a gallery
 GalleriesListRouter.route('/gallerieslists/gallery/:galleryId')
-  .get(function (req, res) {
-    db.all(queries.getGalleriesListOfGallery(req.params.galleryId), function (err, rows) {
-      res.json(rows)
-    })
+  .get(async function (req, res) {
+    try {
+      res.json(await DB.all(queries.getGalleriesListOfGallery, { $id: req.params.galleryId }))
+    } catch (error) {
+      console.log(error);
+
+      res.json(error)
+    }
   })
 
 export default GalleriesListRouter

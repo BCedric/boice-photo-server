@@ -18,7 +18,7 @@ GalleryRouter.route('/gallery/:galleryId')
       const gallery = await DB.get(queries.getGallery, { $id: req.params.galleryId })
 
       if (gallery !== undefined) {
-        const pictures = await DB.all(queries.getPicturesByGallery, { $gallery_id: gallery.id })
+        const pictures = await DB.all(queries.getPicturesByGallery, { $galleryId: gallery.id })
         res.json({ pictures: pictures.map(picture => ({ addr: '/picture/' + picture.id, height: picture.height, width: picture.width })), description: gallery.description, name: gallery.name, id: gallery.id })
       }
       else res.json({ message: "la galerie n'existe pas" })
@@ -38,7 +38,7 @@ GalleryRouter.route('/gallery/:galleryId')
           return gallery
         })
 
-      const galleryPictures = await DB.all(queries.getPicturesByGallery, { $gallery_id: gallery.id })
+      const galleryPictures = await DB.all(queries.getPicturesByGallery, { $galleryId: gallery.id })
 
       galleryPictures.forEach(picture => {
         DB.run(queries.deletePicture, { $id: picture.id })
@@ -78,7 +78,7 @@ GalleryRouter.route('/gallery')
           : `${await galleryPathConstructor(galleryParent)}/${galleryName}`
         }`)
 
-      await DB.run(queries.postGallery, { $name: galleryName, $parent_id: parentId })
+      await DB.run(queries.postGallery, { $name: galleryName, $parentId: parentId })
       const gallery = await DB.get(queries.getGalleryByName, { $name: galleryName })
       fs.mkdir(galleryPath, () => {
         Object.values(req.files).forEach(file => {
@@ -86,7 +86,7 @@ GalleryRouter.route('/gallery')
           fs.copyFileSync(file.path, `${galleryPath}/${pictureName}`)
           const { width, height } = sizeOf(file.path)
           const pictureAddress = path.normalize(`${path.relative(config.imageFolder, galleryPath)}/${pictureName}`)
-          DB.run(queries.postPicture({ name: pictureName, adresse: pictureAddress, width, height, gallery_id: gallery.id }))
+          DB.run(queries.postPicture, { $name: pictureName, $adresse: pictureAddress, $width: width, $height: height, $galleryId: gallery.id })
 
         })
       })

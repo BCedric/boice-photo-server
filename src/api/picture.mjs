@@ -63,18 +63,18 @@ PictureRouter.route('/picture')
       const relativeGalleryPath = gallery != null
         ? await galleryPathConstructor(gallery)
         : ''
-      await DB.run(queries.postPicture({
-        name: pictureName,
-        adresse: path.normalize(
+      await DB.run(queries.postPicture, {
+        $name: pictureName,
+        $adresse: path.normalize(
           galleryId == null
             ? pictureName
             : `${relativeGalleryPath}/${pictureName}`
         ),
-        width,
-        height,
-        gallery_id: galleryId
+        $width: width,
+        $height: height,
+        $galleryId: galleryId
 
-      }))
+      })
       fs.copyFileSync(filePath, `${config.imageFolder}/${relativeGalleryPath}/${pictureName}`)
       res.json({ msg: 'picture added' })
 
