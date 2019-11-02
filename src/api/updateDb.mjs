@@ -95,8 +95,6 @@ UpdateDbRouter.route('/updatedb')
       readFilesSaveDB(config.imageFolder)
       res.json({ update: 'OK' });
     } catch (err) {
-      console.log(err);
-
       res.json({ err })
     }
   })

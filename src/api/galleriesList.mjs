@@ -1,9 +1,8 @@
 import express from 'express'
-import sqlite3 from 'sqlite3'
+
 import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
 
-var db = new sqlite3.Database('boicephoto.sqlite');
 let GalleriesListRouter = express.Router();
 
 GalleriesListRouter.route('/gallerieslist/:gallerieslist')
@@ -47,8 +46,6 @@ GalleriesListRouter.route('/gallerieslists/gallery/:galleryId')
     try {
       res.json(await DB.all(queries.getGalleriesListOfGallery, { $id: req.params.galleryId }))
     } catch (error) {
-      console.log(error);
-
       res.json(error)
     }
   })

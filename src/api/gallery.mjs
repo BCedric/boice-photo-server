@@ -1,5 +1,4 @@
 import express from 'express'
-import sqlite3 from 'sqlite3'
 import fs from 'file-system'
 import path from 'path'
 import sizeOf from 'image-size';
@@ -10,7 +9,6 @@ import DB from '../shared/db.mjs'
 import { galleryPathConstructor } from '../utils/gallery-path-constructor.mjs'
 
 let GalleryRouter = express.Router();
-let db = new sqlite3.Database('boicephoto.sqlite');
 
 GalleryRouter.route('/gallery/:galleryId')
   .get(async function (req, res) {
@@ -101,17 +99,25 @@ GalleryRouter.route('/gallery')
 
 
 GalleryRouter.route('/galleries')
-  .all((req, res) => {
-    db.all(queries.allGalleries, (err, rows) => {
-      res.json({ galleries: rows })
-    })
+  .all(async (req, res) => {
+    try {
+      res.json({
+        galleries: await DB.all(queries.allGalleries)
+      })
+    } catch (err) {
+      res.json({ err })
+    }
   })
 
 GalleryRouter.route('/galleriesnotinlists')
-  .all((req, res) => {
-    db.all(queries.getGalleriesNotInLists, (err, rows) => {
-      res.json(rows)
-    })
+  .all(async (req, res) => {
+    try {
+      res.json({
+        galleries: await DB.all(queries.getGalleriesNotInLists)
+      })
+    } catch (err) {
+      res.json({ err })
+    }
   })
 
 
