@@ -6,7 +6,7 @@ CREATE TABLE `Galleries` (
 CREATE TABLE `Pictures` (
 	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
 	`name`	TEXT,
-	`adresse`	TEXT,
+	`address`	TEXT,
 	`height`	INTEGER,
 	`width`	INTEGER
 );

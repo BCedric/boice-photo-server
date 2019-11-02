@@ -23,7 +23,7 @@ PictureRouter.route('/picture/:pictureId')
   .get(async function (req, res) {
     try {
       const picture = await DB.get(queries.getPicture, { $id: req.params.pictureId })
-      res.sendFile(picture.adresse, options)
+      res.sendFile(picture.address, options)
     } catch (err) {
       res.json({ err })
     }
@@ -43,7 +43,7 @@ PictureRouter.route('/picture/:pictureId')
       const { pictureId } = req.params
       const picture = await DB.get(queries.getPicture, { $id: pictureId })
       await DB.run(queries.deletePicture, { $id: pictureId })
-      fs.unlinkSync(path.normalize(`${config.imageFolder}/${picture.adresse}`))
+      fs.unlinkSync(path.normalize(`${config.imageFolder}/${picture.address}`))
       // db.close()
 
       res.json({ message: "Delete OK" })
@@ -65,7 +65,7 @@ PictureRouter.route('/picture')
         : ''
       await DB.run(queries.postPicture, {
         $name: pictureName,
-        $adresse: path.normalize(
+        $address: path.normalize(
           galleryId == null
             ? pictureName
             : `${relativeGalleryPath}/${pictureName}`

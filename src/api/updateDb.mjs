@@ -25,11 +25,11 @@ const addGallery = async (galleryName, parentGalleryName) =>
 
 const addPicture = (pictureName, picturePath, parentGalleryName) => new Promise(async (resolve, reject) => {
   try {
-    const adresse = path.relative(config.imageFolder, picturePath)
+    const address = path.relative(config.imageFolder, picturePath)
     var dimensions = sizeOf(picturePath);
     var options = {
       $name: pictureName,
-      $adresse: adresse,
+      $address: address,
       $width: dimensions.width,
       $height: dimensions.height,
     }

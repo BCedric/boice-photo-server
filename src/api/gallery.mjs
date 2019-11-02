@@ -42,7 +42,7 @@ GalleryRouter.route('/gallery/:galleryId')
 
       galleryPictures.forEach(picture => {
         DB.run(queries.deletePicture, { $id: picture.id })
-        fs.unlinkSync(path.normalize(`${config.imageFolder}/${picture.adresse}`))
+        fs.unlinkSync(path.normalize(`${config.imageFolder}/${picture.address}`))
       })
 
       fs.rmdirSync(path.normalize(`${config.imageFolder}/${await galleryPathConstructor(gallery)}`))
@@ -86,7 +86,7 @@ GalleryRouter.route('/gallery')
           fs.copyFileSync(file.path, `${galleryPath}/${pictureName}`)
           const { width, height } = sizeOf(file.path)
           const pictureAddress = path.normalize(`${path.relative(config.imageFolder, galleryPath)}/${pictureName}`)
-          DB.run(queries.postPicture, { $name: pictureName, $adresse: pictureAddress, $width: width, $height: height, $galleryId: gallery.id })
+          DB.run(queries.postPicture, { $name: pictureName, $address: pictureAddress, $width: width, $height: height, $galleryId: gallery.id })
 
         })
       })
