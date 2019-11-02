@@ -32,6 +32,7 @@ GalleriesListRouter.route('/gallerieslist/:gallerieslist')
     }
   })
 
+// return galleries which have galleries children and no picture
 GalleriesListRouter.route('/gallerieslists')
   .get(async function (req, res) {
     try {
@@ -42,6 +43,7 @@ GalleriesListRouter.route('/gallerieslists')
     }
   })
 
+// return brothers of a gallery
 GalleriesListRouter.route('/gallerieslists/gallery/:galleryId')
   .get(function (req, res) {
     db.all(queries.getGalleriesListOfGallery(req.params.galleryId), function (err, rows) {
