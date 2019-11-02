@@ -14,7 +14,7 @@ const queries = {
   createTableGalleries: "CREATE TABLE `Galleries` (`name`	TEXT,`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`description`	TEXT, `parent_id`	INTEGER);",
   getGallery: "SELECT * FROM Galleries WHERE id = $id",
   getGalleryByName: "SELECT * FROM Galleries WHERE name = $name",
-  postGallery: "INSERT INTO Galleries (name) VALUES ($name)",
+  postGallery: "INSERT INTO Galleries (name, parent_id) VALUES ($name, $parent_id)",
   allGalleries: "SELECT Galleries.* From Galleries, Pictures where Galleries.id = Pictures.gallery_id group by Galleries.id;",
   deleteGallery: "DELETE FROM Galleries WHERE id =$id",
   updateGalleryParentId: "UPDATE Galleries SET parent_id = (SELECT id from Galleries WHERE name = $parentName) WHERE name = $galleryName;",
