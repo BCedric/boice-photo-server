@@ -1,12 +1,10 @@
 import express from 'express'
-import path from 'path'
-import fs from 'file-system'
-import sizeOf from 'image-size';
 
 import queries from '../utils/queries.mjs'
 import config from '../utils/config.mjs'
 import DB from '../shared/db.mjs'
-import { galleryPathConstructor } from '../utils/gallery-path-constructor.mjs'
+import { removePicture } from '../domain/pictures/pictures-functions.mjs';
+import { addPicture } from '../domain/pictures/pictures-functions.mjs';
 
 var PictureRouter = express.Router();
 
@@ -42,10 +40,7 @@ PictureRouter.route('/picture/:pictureId')
     try {
       const { pictureId } = req.params
       const picture = await DB.get(queries.getPicture, { $id: pictureId })
-      await DB.run(queries.deletePicture, { $id: pictureId })
-      fs.unlinkSync(path.normalize(`${config.imageFolder}/${picture.address}`))
-      // db.close()
-
+      removePicture(picture)
       res.json({ message: "Delete OK" })
     } catch (err) {
       res.json({ err: err })
@@ -55,27 +50,8 @@ PictureRouter.route('/picture/:pictureId')
 PictureRouter.route('/picture')
   .post(async function (req, res) {
     try {
-      const { galleryId } = req.fields
-      const { name: pictureName, path: filePath } = req.files.file
-      const { width, height } = sizeOf(filePath)
-
-      const gallery = await DB.get(queries.getGallery, { $id: galleryId })
-      const relativeGalleryPath = gallery != null
-        ? await galleryPathConstructor(gallery)
-        : ''
-      await DB.run(queries.postPicture, {
-        $name: pictureName,
-        $address: path.normalize(
-          galleryId == null
-            ? pictureName
-            : `${relativeGalleryPath}/${pictureName}`
-        ),
-        $width: width,
-        $height: height,
-        $galleryId: galleryId
-
-      })
-      fs.copyFileSync(filePath, `${config.imageFolder}/${relativeGalleryPath}/${pictureName}`)
+      const gallery = await DB.get(queries.getGallery, { $id: req.fields.galleryId })
+      await addPicture(req.files.file, gallery)
       res.json({ msg: 'picture added' })
 
     } catch (err) {

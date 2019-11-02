@@ -6,7 +6,7 @@ const queries = {
   postPicture: "INSERT INTO Pictures (name, address, width, height, galleryId) VALUES ($name, $address, $width, $height, $galleryId);",
   allPictures: "SELECT * FROM Pictures",
   deleteTable: (table) => "DROP TABLE " + table + ";",
-  createTablePictures: "CREATE TABLE `Pictures` (`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`name`	TEXT,`address`	TEXT,`height`	INTEGER,`width`	INTEGER, `galleryId`	INTEGER, FOREIGN KEY(`galleryId`) REFERENCES `Galleries`(`id`));",
+  createTablePictures: "CREATE TABLE `Pictures` (`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`name`	TEXT,`address`	TEXT,`height`	INTEGER,`width`	INTEGER,'galleryId' INTEGER REFERENCES Galleries (id) ON DELETE CASCADE ON UPDATE CASCADE, FOREIGN KEY(`galleryId`) REFERENCES `Galleries`(`id`));",
   createTableGalleries: "CREATE TABLE `Galleries` (`name`	TEXT,`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`description`	TEXT, `parentId`	INTEGER);",
   getGallery: "SELECT * FROM Galleries WHERE id = $id",
   getGalleryByName: "SELECT * FROM Galleries WHERE name = $name",
