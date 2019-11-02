@@ -1,5 +1,5 @@
 {
-  "name": "boicePhotoServer",
+  "name": "boice-photo-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "startt": "http-server",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "gulp build",
-    "start": "gulp && node bin/index.js"
+    "start": "nodemon --experimental-modules src/index.mjs"
   },
   "keywords": [],
   "author": "",
@@ -26,10 +26,10 @@
     "nodemailer": "^4.4.0",
     "pump": "^1.0.3",
     "request": "^2.83.0",
-    "sqlite3": "^3.1.13"
+    "sqlite3": "^4.1.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
+    "@babel/cli": "^7.6.4",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-polyfill": "^6.26.0",
@@ -38,13 +38,13 @@
     "babelify": "^8.0.0",
     "brfs": "^1.4.3",
     "browserify": "^14.5.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-babel": "^7.0.0",
     "gulp-nodemon": "^2.2.1",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
-    "gulp-watch": "^4.3.11",
+    "gulp-watch": "^5.0.1",
     "json-loader": "^0.5.7",
     "rimraf": "^2.6.2",
     "transform-loader": "^0.2.4",
