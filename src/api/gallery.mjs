@@ -56,7 +56,7 @@ GalleryRouter.route('/gallery')
 
 
 GalleryRouter.route('/galleries')
-  .all(async (req, res) => {
+  .get(async (req, res) => {
     try {
       res.json({
         galleries: await DB.all(queries.allGalleries)
@@ -67,7 +67,7 @@ GalleryRouter.route('/galleries')
   })
 
 GalleryRouter.route('/galleriesnotinlists')
-  .all(async (req, res) => {
+  .get(async (req, res) => {
     try {
       res.json({
         galleries: await DB.all(queries.getGalleriesNotInLists)

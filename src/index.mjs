@@ -7,11 +7,9 @@ import SendEmailRouter from './api/sendEmail.mjs'
 // import corsPrefetch from 'cors-prefetch-middleware'
 import cors from 'cors'
 import bodyParser from 'body-parser'
-import formidableMiddleware from 'express-formidable'
 
 var app = express();
 
-app.use(formidableMiddleware())
 app.use(cors());
 // app.use(corsPrefetch);
 app.use(bodyParser.json())

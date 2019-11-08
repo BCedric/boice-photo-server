@@ -1,10 +1,6 @@
 import sqlite3 from 'sqlite3'
 import config from '../utils/config'
 
-const db = new sqlite3.Database(
-    config.dbFile
-)
-
 class DB {
     static get(query, params) {
         return new Promise((resolve, reject) => {

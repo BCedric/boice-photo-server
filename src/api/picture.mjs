@@ -5,6 +5,7 @@ import config from '../utils/config.mjs'
 import DB from '../shared/db.mjs'
 import { removePicture } from '../domain/pictures/pictures-functions.mjs';
 import { addPicture } from '../domain/pictures/pictures-functions.mjs';
+import { uploadFiles } from '../shared/upload-files.mjs';
 
 var PictureRouter = express.Router();
 
@@ -50,8 +51,9 @@ PictureRouter.route('/picture/:pictureId')
 PictureRouter.route('/picture')
   .post(async function (req, res) {
     try {
-      const gallery = await DB.get(queries.getGallery, { $id: req.fields.galleryId })
-      await addPicture(req.files.file, gallery)
+      const { fields, files } = await uploadFiles(req)
+      const gallery = await DB.get(queries.getGallery, { $id: fields.galleryId })
+      await addPicture(files.file, gallery)
       res.json({ msg: 'picture added' })
 
     } catch (err) {
