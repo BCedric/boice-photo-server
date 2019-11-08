@@ -66,23 +66,26 @@ const readDir = async folder =>
     })
   })
 
-const readFilesSaveDB = async (folder) => {
-  try {
-    const items = await readDir(folder)
-    items.forEach(async (filename) => {
-      const fileStat = await getFileStat(`${folder}/${filename}`)
-      const parentDirectoryPath = path.resolve(`${folder}/${filename}`, '..')
-      const parentGalleryName = parentDirectoryPath === path.normalize(config.imageFolder) ? null : path.basename(parentDirectoryPath)
-      if (fileStat.isDirectory()) {
-        await addGallery(filename, parentGalleryName)
-        readFilesSaveDB(`${folder}/${filename}`, parentGalleryName)
-      } else {
-        await addPicture(filename, `${folder}/${filename}`, parentGalleryName)
-      }
-    })
-  } catch (err) {
-    throw err
-  }
+const readFilesSaveDB = (folder) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const items = await readDir(folder)
+      items.forEach(async (filename) => {
+        const fileStat = await getFileStat(`${folder}/${filename}`)
+        const parentDirectoryPath = path.resolve(`${folder}/${filename}`, '..')
+        const parentGalleryName = parentDirectoryPath === path.normalize(config.imageFolder) ? null : path.basename(parentDirectoryPath)
+        if (fileStat.isDirectory()) {
+          await addGallery(filename, parentGalleryName)
+          await readFilesSaveDB(`${folder}/${filename}`, parentGalleryName)
+        } else {
+          await addPicture(filename, `${folder}/${filename}`, parentGalleryName)
+        }
+        resolve(null)
+      })
+    } catch (err) {
+      reject(err)
+    }
+  })
 }
 
 UpdateDbRouter.route('/updatedb')
@@ -92,7 +95,7 @@ UpdateDbRouter.route('/updatedb')
       await DB.run(queries.deleteTable('Galleries'))
       await DB.run(queries.createTableGalleries)
       await DB.run(queries.createTablePictures)
-      readFilesSaveDB(config.imageFolder)
+      await readFilesSaveDB(config.imageFolder)
       res.json({ update: 'OK' });
     } catch (err) {
       res.json({ err })
