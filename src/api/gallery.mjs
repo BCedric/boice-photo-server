@@ -2,21 +2,16 @@ import express from 'express'
 
 import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
-import { removeGallery } from '../domain/galleries/galleries-functions.mjs';
 import { addGallery } from '../domain/galleries/galleries-functions.mjs';
+import Gallery from '../domain/galleries/Gallery.mjs';
 
 let GalleryRouter = express.Router();
 
 GalleryRouter.route('/gallery/:galleryId')
   .get(async function (req, res) {
     try {
-      const gallery = await DB.get(queries.getGallery, { $id: req.params.galleryId })
-
-      if (gallery !== undefined) {
-        const pictures = await DB.all(queries.getPicturesByGallery, { $galleryId: gallery.id })
-        res.json({ pictures: pictures.map(picture => ({ addr: '/picture/' + picture.id, height: picture.height, width: picture.width })), description: gallery.description, name: gallery.name, id: gallery.id })
-      }
-      else res.json({ message: "la galerie n'existe pas" })
+      const gallery = new Gallery(req.params.galleryId)
+      res.json(await gallery.init())
     } catch (err) {
       res.json({ err })
     }
@@ -24,21 +19,29 @@ GalleryRouter.route('/gallery/:galleryId')
 
   .delete(async function (req, res) {
     try {
-      await removeGallery(req.params.galleryId)
+      await new Gallery(req.params.galleryId).delete()
       res.json({ message: "Delete OK" })
     } catch (err) {
       res.json({ err })
     }
   })
 
-// .put(function(req,res){
-//   db.run( queries.put, {$name: req.query.name, $id: req.params.pictureId})
-//   res.json({message: "update OK"})
-// })
-
-
-
-// console.log('multer', multer);
+  .put(async function (req, res) {
+    const { galleryId } = req.params
+    try {
+      const gallery = new Gallery(galleryId)
+      const { name, description } = req.body
+      if (name != null && name !== '') {
+        await gallery.setName(name)
+      }
+      if (description != null && description !== '') {
+        await gallery.setDescription(description)
+      }
+      res.json({ message: "update OK" })
+    } catch (err) {
+      res.json({ err })
+    }
+  })
 
 
 
@@ -59,7 +62,7 @@ GalleryRouter.route('/galleries')
   .get(async (req, res) => {
     try {
       res.json({
-        galleries: await DB.all(queries.allGalleries)
+        galleries: await Gallery.all()
       })
     } catch (err) {
       res.json({ err })
@@ -76,6 +79,21 @@ GalleryRouter.route('/galleriesnotinlists')
       res.json({ err })
     }
   })
+
+GalleryRouter.route('/navgalleries')
+  .get(async (req, res) => {
+    try {
+      const galleriesLists = await DB.all(queries.allGalleriesLists)
+      const galleries = await DB.all(queries.getGalleriesNotInLists)
+      res.json({
+        galleriesLists,
+        galleries
+      })
+    } catch (err) {
+      res.json({ err })
+    }
+  })
+
 
 
 

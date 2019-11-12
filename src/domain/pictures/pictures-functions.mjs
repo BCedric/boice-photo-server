@@ -7,17 +7,6 @@ import queries from '../../utils/queries.mjs'
 import DB from '../../shared/db.mjs'
 import { galleryPathConstructor } from '../../utils/gallery-path-constructor.mjs';
 
-export const removePicture = picture =>
-    new Promise(async (resolve, reject) => {
-        try {
-            await DB.run(queries.deletePicture, { $id: picture.id })
-            fs.unlinkSync(path.normalize(`${config.imageFolder}/${picture.address}`))
-            resolve(null)
-        } catch (err) {
-            reject(err)
-        }
-    })
-
 export const addPicture = (file, gallery) =>
     new Promise(async (resolve, reject) => {
         try {
@@ -26,7 +15,6 @@ export const addPicture = (file, gallery) =>
             const relativeGalleryPath = gallery != null
                 ? await galleryPathConstructor(gallery)
                 : ''
-
             await DB.run(queries.postPicture, {
                 $name: pictureName,
                 $address: path.normalize(
@@ -36,7 +24,7 @@ export const addPicture = (file, gallery) =>
                 ),
                 $width: width,
                 $height: height,
-                $galleryId: gallery != null ? gallery.id : null
+                $galleryId: gallery != null ? gallery.id : null,
 
             })
             fs.copyFileSync(filePath, path.normalize(`${config.imageFolder}/${relativeGalleryPath}/${pictureName}`))

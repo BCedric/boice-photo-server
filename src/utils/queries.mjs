@@ -2,6 +2,7 @@ const queries = {
   getPicture: "SELECT * FROM Pictures WHERE id = $id",
   getPicturesByGallery: "SELECT * FROM Pictures WHERE galleryId = $galleryId",
   putPicture: "UPDATE Pictures SET name = $name WHERE id = $id",
+  updatePictureAddress: "UPDATE Pictures SET address = $address WHERE id = $id",
   deletePicture: "DELETE FROM Pictures WHERE id = $id",
   postPicture: "INSERT INTO Pictures (name, address, width, height, galleryId) VALUES ($name, $address, $width, $height, $galleryId);",
   allPictures: "SELECT * FROM Pictures",
@@ -19,7 +20,8 @@ const queries = {
   getRandomPictureFromGallerie: "SELECT * FROM Pictures WHERE galleryId = $id AND Pictures.height < Pictures.width ORDER BY random() Limit 1",
   getGalleriesListOfGallery: "SELECT * FROM Galleries WHERE parentId = (SELECT parentId FROM Galleries WHERE id = $id) ORDER BY id",
   getGalleriesNotInLists: 'SELECT * FROM GALLERIES WHERE parentId IS NULL AND id NOT IN (SELECT parentId FROM Galleries WHERE parentId IS NOT NULL)',
-  updateGalleriesDescription: 'UPDATE Galleries SET description = $description WHERE name = $name'
+  updateGalleryDescription: `UPDATE Galleries SET description = $description WHERE id = $id`,
+  updateGallery: `UPDATE Galleries SET description = $description, name = $name WHERE id = $id`
 }
 
 export default queries
