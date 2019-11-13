@@ -2,28 +2,14 @@ import express from 'express'
 
 import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
+import GalleriesList from '../domain/galleriesLists/GalleriesList.mjs';
 
 let GalleriesListRouter = express.Router();
 
 GalleriesListRouter.route('/gallerieslist/:gallerieslist')
   .get(async function (req, res) {
     try {
-      const gallery = await DB.get(queries.getGallery, { $id: req.params.gallerieslist })
-
-      const description = gallery.description
-      const galleriesChildren = await DB.all(queries.getGalleriesList, { $parentId: req.params.gallerieslist })
-
-      var galleries = []
-      galleriesChildren.forEach(
-        async galleryChild => {
-          const randPicture = await DB.get(queries.getRandomPictureFromGallerie, { $id: galleryChild.id })
-          if (randPicture != null) {
-            galleryChild.randPicture = '/picture/' + randPicture.id
-          }
-          galleries.push(galleryChild)
-          galleries.length === galleriesChildren.length && res.json({ galleries, description, name: galleriesChildren[0].parent_name, id: galleriesChildren[0].parentId })
-        }
-      )
+      res.json(await new GalleriesList(req.params.gallerieslist).init())
     } catch (err) {
       res.json(err)
     }
@@ -33,8 +19,7 @@ GalleriesListRouter.route('/gallerieslist/:gallerieslist')
 GalleriesListRouter.route('/gallerieslists')
   .get(async function (req, res) {
     try {
-      const galleriesLists = await DB.all(queries.allGalleriesLists)
-      res.json(galleriesLists)
+      res.json(await GalleriesList.all())
     } catch (err) {
       res.json(err)
     }

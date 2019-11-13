@@ -8,8 +8,11 @@ import config from '../../utils/config.mjs'
 import { galleryPathConstructor } from "../../utils/gallery-path-constructor.mjs"
 
 class Gallery {
-    constructor(id) {
+    constructor(id, name, description, parentId) {
         this.id = id
+        this.name = name
+        this.description = description
+        this.parentId = parentId
     }
 
     init() {
