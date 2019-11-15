@@ -4,6 +4,7 @@ import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
 import { addGallery } from '../domain/galleries/galleries-functions.mjs';
 import Gallery from '../domain/galleries/Gallery.mjs';
+import { uploadFiles } from '../shared/upload-files.mjs';
 
 let GalleryRouter = express.Router();
 
@@ -20,7 +21,7 @@ GalleryRouter.route('/gallery/:galleryId')
   .delete(async function (req, res) {
     try {
       await new Gallery(req.params.galleryId).delete()
-      res.json({ message: "Delete OK" })
+      res.json({ galleries: await Gallery.all() })
     } catch (err) {
       res.json({ err })
     }
@@ -49,8 +50,10 @@ GalleryRouter.route('/gallery')
   // body : {name, parentId, file1, file2 ...}
   .post(async function (req, res) {
     try {
-      await addGallery(req.fields, req.files)
-      res.json({ message: "Insert OK" })
+      const { fields, files } = await uploadFiles(req)
+      await addGallery(fields, Object.values(files))
+      const galleries = await Gallery.all()
+      res.json({ galleries })
     } catch (err) {
       res.json(err)
     }

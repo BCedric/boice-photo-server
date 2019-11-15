@@ -10,7 +10,7 @@ import { addPicture } from '../pictures/pictures-functions.mjs'
 export const addGallery = (fields, files) =>
     new Promise(async (resolve, reject) => {
         try {
-            const { name: galleryName, parentId } = fields
+            const { name: galleryName, description, parentId } = fields
             const galleryParent = parentId != null && await DB.get(queries.getGallery, { $id: parentId })
             const galleryPath = path.normalize(`${config.imageFolder}/${
                 parentId == null
@@ -18,10 +18,11 @@ export const addGallery = (fields, files) =>
                     : `${await galleryPathConstructor(galleryParent)}/${galleryName}`
                 }`)
 
-            await DB.run(queries.postGallery, { $name: galleryName, $parentId: parentId })
+            await DB.run(queries.postGallery, { $name: galleryName, $parentId: parentId, $description: description })
+
             const gallery = await DB.get(queries.getGalleryByName, { $name: galleryName })
             fs.mkdir(galleryPath, () => {
-                Object.values(files).forEach(async file => {
+                files.forEach(async file => {
                     await addPicture(file, gallery)
                 })
             })
