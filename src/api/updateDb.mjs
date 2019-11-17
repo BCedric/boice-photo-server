@@ -14,7 +14,7 @@ const addGallery = async (galleryName, parentGalleryName) =>
     try {
       await DB.run(queries.postGallery, { $name: galleryName })
       if (parentGalleryName != null) {
-        await DB.run(queries.updateGalleryParentId, { $parentName: parentGalleryName, $galleryName: galleryName })
+        await DB.run(queries.updateGalleryParentIdByName, { $parentName: parentGalleryName, $galleryName: galleryName })
       }
 
       resolve(null)

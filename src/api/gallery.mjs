@@ -44,8 +44,6 @@ GalleryRouter.route('/gallery/:galleryId')
     }
   })
 
-
-
 GalleryRouter.route('/gallery')
   // body : {name, parentId, file1, file2 ...}
   .post(async function (req, res) {
@@ -58,8 +56,6 @@ GalleryRouter.route('/gallery')
       res.json(err)
     }
   })
-
-
 
 GalleryRouter.route('/galleries')
   .get(async (req, res) => {

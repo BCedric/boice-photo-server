@@ -12,13 +12,56 @@ class GalleriesList {
             try {
                 const galleriesList = await DB.get(queries.getGallery, { $id: this.id })
                 const galleriesChildren = await DB.all(queries.getGalleriesList, { $parentId: this.id })
-                galleriesList.children = await Promise.all(galleriesChildren.map(async child => {
+                this.galleries = await Promise.all(galleriesChildren.map(async child => {
                     const { id, name, description, parentId } = child
-                    return await new Gallery(id, name, description, parentId)
+                    const randPicture = await DB.get(queries.getRandomPictureFromGallerie, { $id: id })
+                    return { ...await new Gallery(id, name, description, parentId), randPicture: `/picture/${randPicture.id}` }
                 }))
-                resolve(galleriesList)
+
+                this.name = galleriesList.name
+                this.description = galleriesList.description
+                this.parentId = galleriesList.parentId
+                console.log('init', galleriesList);
+
+                resolve(this)
             } catch (error) {
                 reject(error)
+            }
+        })
+    }
+
+    update({ name }) {
+        //managing files
+        return new Promise(async (resolve, reject) => {
+            try {
+                await DB.run(queries.updateGallery, { $name: name, $id: this.id })
+                resolve(null)
+            } catch (err) {
+                reject(err)
+            }
+        })
+    }
+
+    addGallery({ galleryId }) {
+        //managing files
+        return new Promise(async (resolve, reject) => {
+            try {
+                await DB.run(queries.updateGalleryParentId, { $parentId: this.id, $id: galleryId })
+                resolve(null)
+            } catch (err) {
+                reject(err)
+            }
+        })
+    }
+
+    removeGallery({ galleryId }) {
+        //managing files
+        return new Promise(async (resolve, reject) => {
+            try {
+                await DB.run(queries.updateGalleryParentId, { $parentId: null, $id: galleryId })
+                resolve(null)
+            } catch (err) {
+                reject(err)
             }
         })
     }
