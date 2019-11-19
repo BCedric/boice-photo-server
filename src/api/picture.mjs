@@ -44,7 +44,7 @@ PictureRouter.route('/picture/:pictureId')
       const picture = new Picture(pictureId)
       await picture.delete()
       const gallery = await new Gallery(picture.galleryId).init()
-      res.json({ pictures: gallery.pictures })
+      res.json({ gallery })
     } catch (err) {
       res.json({ err: err })
     }
@@ -54,10 +54,17 @@ PictureRouter.route('/picture')
   .post(async function (req, res) {
     try {
       const { fields, files } = await uploadFiles(req)
-      const gallery = await new Gallery(fields.galleryId).init()
-      await addPicture(files.file, gallery)
-      const galleryUpdated = await new Gallery(fields.galleryId).init()
-      res.json({ pictures: galleryUpdated.pictures })
+      const galleryId = parseInt(fields.galleryId)
+      const gallery = galleryId != null
+        ? await new Gallery(galleryId).init()
+        : null
+      await addPicture(Object.values(files), gallery)
+      if (gallery != null) {
+        const galleryUpdated = await new Gallery(galleryId).init()
+        res.json({ gallery: galleryUpdated })
+      } else {
+        res.json({ message: 'photos ajoutées' })
+      }
     } catch (err) {
       res.json(err)
     }

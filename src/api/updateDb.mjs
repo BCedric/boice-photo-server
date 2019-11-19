@@ -9,14 +9,10 @@ import config from '../utils/config.mjs'
 
 let UpdateDbRouter = express.Router();
 
-const addGallery = async (galleryName, parentGalleryName) =>
+const addGallery = async (galleryName) =>
   new Promise(async (resolve, reject) => {
     try {
       await DB.run(queries.postGallery, { $name: galleryName })
-      if (parentGalleryName != null) {
-        await DB.run(queries.updateGalleryParentIdByName, { $parentName: parentGalleryName, $galleryName: galleryName })
-      }
-
       resolve(null)
     } catch (err) {
       reject(err)
@@ -25,11 +21,9 @@ const addGallery = async (galleryName, parentGalleryName) =>
 
 const addPicture = (pictureName, picturePath, parentGalleryName) => new Promise(async (resolve, reject) => {
   try {
-    const address = path.relative(config.imageFolder, picturePath)
     var dimensions = sizeOf(picturePath);
     var options = {
       $name: pictureName,
-      $address: address,
       $width: dimensions.width,
       $height: dimensions.height,
     }
@@ -75,7 +69,7 @@ const readFilesSaveDB = (folder) => {
         const parentDirectoryPath = path.resolve(`${folder}/${filename}`, '..')
         const parentGalleryName = parentDirectoryPath === path.normalize(config.imageFolder) ? null : path.basename(parentDirectoryPath)
         if (fileStat.isDirectory()) {
-          await addGallery(filename, parentGalleryName)
+          await addGallery(filename)
           await readFilesSaveDB(`${folder}/${filename}`, parentGalleryName)
         } else {
           await addPicture(filename, `${folder}/${filename}`, parentGalleryName)

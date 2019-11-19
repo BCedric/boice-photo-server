@@ -7,11 +7,10 @@ import config from '../../utils/config.mjs'
 
 
 class Picture {
-    constructor(id, name, address, height, width, galleryId) {
+    constructor(id, name, height, width, galleryId) {
         this.id = id
         this.addr = `/picture/${this.id}`
         this.name = name
-        this.address = address
         this.height = height
         this.width = width
         this.galleryId = galleryId
@@ -22,8 +21,14 @@ class Picture {
         return new Promise(async (resolve, reject) => {
             try {
                 const picture = await DB.get(queries.getPicture, { $id: this.id })
+                if (picture.galleryId != null) {
+                    const gallery = await DB.get(queries.getGallery, { $id: picture.galleryId })
+                    this.address = path.normalize(`${gallery.name}/${picture.name}`)
+                } else {
+                    this.address = path.normalize(`${picture.name}`)
+                }
+                this.addr = `/picture/${picture.id}`
                 this.name = picture.name
-                this.address = picture.address
                 this.height = picture.height
                 this.width = picture.width
                 this.galleryId = picture.galleryId
@@ -41,8 +46,9 @@ class Picture {
                 if (this.name == null) {
                     await this.init()
                 }
+                const gallery = await DB.get(queries.getGallery, { $id: this.galleryId })
                 await DB.run(queries.deletePicture, { $id: this.id })
-                fs.unlinkSync(path.normalize(`${config.imageFolder}/${this.address}`))
+                fs.unlinkSync(path.normalize(`${config.imageFolder}/${gallery.name}/${this.name}`))
                 resolve(null)
             } catch (err) {
                 reject(err)
@@ -70,8 +76,8 @@ class Picture {
 
                 resolve(pictures.map(
                     picture => {
-                        const { id, name, address, height, width, galleryId } = picture
-                        return new Picture(id, name, address, height, width, galleryId)
+                        const { id, name, height, width, galleryId } = picture
+                        return new Picture(id, name, height, width, galleryId)
                     }
                 ))
             } catch (error) {
@@ -86,8 +92,8 @@ class Picture {
                 const pictures = await DB.all(queries.getPicturesByGallery, { $galleryId: galleryId })
                 resolve(
                     pictures.map(picture => {
-                        const { id, name, address, height, width, galleryId } = picture
-                        return new Picture(id, name, address, height, width, galleryId)
+                        const { id, name, height, width, galleryId } = picture
+                        return new Picture(id, name, height, width, galleryId)
                     })
                 )
             } catch (error) {

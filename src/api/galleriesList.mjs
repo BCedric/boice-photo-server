@@ -30,6 +30,18 @@ GalleriesListRouter.route('/gallerieslist/:gallerieslist')
     }
   })
 
+  .delete(async function (req, res) {
+    try {
+      const galleriesList = new GalleriesList(req.params.gallerieslist)
+      await galleriesList.init()
+      await galleriesList.delete()
+      const galleriesLists = await GalleriesList.all()
+      res.json({ galleriesLists })
+    } catch (err) {
+      res.json(err)
+    }
+  })
+
 GalleriesListRouter.route('/gallerieslist/addGallery/:gallerieslist')
   .put(async function (req, res) {
     try {
@@ -52,8 +64,6 @@ GalleriesListRouter.route('/gallerieslist/removeGallery/:gallerieslist')
 
       res.json(galleriesList)
     } catch (err) {
-      console.log(err);
-
       res; json({ err })
     }
   })
@@ -64,16 +74,7 @@ GalleriesListRouter.route('/gallerieslist')
       const { fields, files } = await uploadFiles(req)
       const galleriesName = JSON.parse(fields.galleries)
 
-      const makeDirectory = () =>
-        new Promise((resolve, reject) => {
-          fs.mkdir(path.normalize(`${config.imageFolder}/${fields.name}`), err => {
-            err != null
-              ? reject(err)
-              : resolve(null)
-          })
-        })
-      await makeDirectory
-      await DB.run(queries.postGallery, { $name: fields.name })
+      await DB.run(queries.postGalleriesList, { $name: fields.name })
       const galleriesList = await DB.get(queries.getGalleryByName, { $name: fields.name })
       galleriesName.forEach(async galleryName => {
         const galleryFiles = Object.entries(files)

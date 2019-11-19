@@ -32,13 +32,15 @@ GalleryRouter.route('/gallery/:galleryId')
     try {
       const gallery = new Gallery(galleryId)
       const { name, description } = req.body
+
       if (name != null && name !== '') {
         await gallery.setName(name)
       }
       if (description != null && description !== '') {
         await gallery.setDescription(description)
       }
-      res.json({ message: "update OK" })
+      const updatedGallery = await new Gallery(galleryId).init()
+      res.json({ gallery: updatedGallery })
     } catch (err) {
       res.json({ err })
     }
