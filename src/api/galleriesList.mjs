@@ -2,8 +2,8 @@ import express from 'express'
 
 import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
-import GalleriesList from '../domain/galleriesLists/GalleriesList.mjs';
 import { uploadFiles } from '../shared/upload-files.mjs';
+import GalleriesList from '../domain/galleriesLists/GalleriesList.mjs';
 import { addGallery } from '../domain/galleries/galleries-functions.mjs';
 import { authMiddleware } from '../domain/auth/auth-functions.mjs';
 

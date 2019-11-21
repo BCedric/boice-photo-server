@@ -5,14 +5,12 @@ import GalleryRouter from './api/gallery.mjs'
 import GalleriesListRouter from './api/galleriesList.mjs'
 import SendEmailRouter from './api/sendEmail.mjs'
 import AuthRouter from './api/auth.mjs'
-// import corsPrefetch from 'cors-prefetch-middleware'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 
 var app = express();
 
 app.use(cors());
-// app.use(corsPrefetch);
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
     extended: true

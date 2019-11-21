@@ -1,10 +1,10 @@
-import fs from 'file-system'
+import fs from 'fs'
 import path from 'path'
 
 import DB from '../../shared/db.mjs'
 import queries from '../../utils/queries.mjs';
-import Picture from '../pictures/Picture.mjs';
 import config from '../../utils/config.mjs'
+import Picture from '../pictures/Picture.mjs';
 
 class Gallery {
     constructor(id, name, description, parentId) {

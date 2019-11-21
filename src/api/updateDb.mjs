@@ -1,5 +1,5 @@
 import express from 'express'
-import fs from 'file-system'
+import fs from 'fs'
 import path from 'path'
 import sizeOf from 'image-size';
 

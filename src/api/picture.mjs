@@ -3,8 +3,8 @@ import express from 'express'
 import queries from '../utils/queries.mjs'
 import config from '../utils/config.mjs'
 import DB from '../shared/db.mjs'
-import { addPicture } from '../domain/pictures/pictures-functions.mjs';
 import { uploadFiles } from '../shared/upload-files.mjs';
+import { addPicture } from '../domain/pictures/pictures-functions.mjs';
 import Picture from '../domain/pictures/Picture.mjs';
 import Gallery from '../domain/galleries/Gallery.mjs';
 import { authMiddleware } from '../domain/auth/auth-functions.mjs';

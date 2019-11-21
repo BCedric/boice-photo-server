@@ -2,9 +2,9 @@ import express from 'express'
 
 import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
+import { uploadFiles } from '../shared/upload-files.mjs';
 import { addGallery } from '../domain/galleries/galleries-functions.mjs';
 import Gallery from '../domain/galleries/Gallery.mjs';
-import { uploadFiles } from '../shared/upload-files.mjs';
 import { authMiddleware } from '../domain/auth/auth-functions.mjs';
 
 let GalleryRouter = express.Router();

@@ -1,5 +1,3 @@
-import fs from "file-system"
-
 import Gallery from "../galleries/Gallery.mjs"
 import DB from '../../shared/db.mjs'
 import queries from '../../utils/queries.mjs'

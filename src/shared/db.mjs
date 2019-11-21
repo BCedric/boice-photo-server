@@ -1,4 +1,5 @@
 import sqlite3 from 'sqlite3'
+
 import config from '../utils/config'
 
 const getDb = () => {

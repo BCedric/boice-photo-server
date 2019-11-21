@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken'
 
 import config from '../utils/config.mjs'
 import DB from '../shared/db.mjs'
-import { generatePassword } from '../domain/auth/auth-functions.mjs';
 import { generateAuthToken } from '../domain/auth/auth-functions.mjs';
 
 let AuthRouter = express.Router();
@@ -44,6 +43,16 @@ AuthRouter.route(`/checkauth`)
             const { token } = req.body
             const decoded = jwt.verify(token, config.privateKey);
             res.json({ decoded })
+        } catch (err) {
+            res.json({ err })
+        }
+    })
+
+AuthRouter.route(`/logout`)
+    .put(async function (req, res) {
+        try {
+            await DB.run(queries.updateUserToken, { $id: req.body.id })
+            res.json({ msg: 'coucou ' })
         } catch (err) {
             res.json({ err })
         }
