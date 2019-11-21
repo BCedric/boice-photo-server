@@ -1,13 +1,11 @@
 import express from 'express'
-import fs from 'file-system'
-import path from 'path'
 
 import queries from '../utils/queries.mjs'
 import DB from '../shared/db.mjs'
-import config from '../utils/config.mjs'
 import GalleriesList from '../domain/galleriesLists/GalleriesList.mjs';
 import { uploadFiles } from '../shared/upload-files.mjs';
 import { addGallery } from '../domain/galleries/galleries-functions.mjs';
+import { authMiddleware } from '../domain/auth/auth-functions.mjs';
 
 let GalleriesListRouter = express.Router();
 
@@ -20,7 +18,7 @@ GalleriesListRouter.route('/gallerieslist/:gallerieslist')
     }
   })
 
-  .put(async function (req, res) {
+  .put(authMiddleware, async function (req, res) {
     try {
       const galleriesList = new GalleriesList(req.params.gallerieslist)
       await galleriesList.update(req.body)
@@ -30,7 +28,7 @@ GalleriesListRouter.route('/gallerieslist/:gallerieslist')
     }
   })
 
-  .delete(async function (req, res) {
+  .delete(authMiddleware, async function (req, res) {
     try {
       const galleriesList = new GalleriesList(req.params.gallerieslist)
       await galleriesList.init()

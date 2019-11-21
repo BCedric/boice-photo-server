@@ -4,6 +4,7 @@ import UpdateDbRouter from './api/updateDb.mjs'
 import GalleryRouter from './api/gallery.mjs'
 import GalleriesListRouter from './api/galleriesList.mjs'
 import SendEmailRouter from './api/sendEmail.mjs'
+import AuthRouter from './api/auth.mjs'
 // import corsPrefetch from 'cors-prefetch-middleware'
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({
 app.use(PictureRouter)
 app.use(UpdateDbRouter)
 app.use(GalleryRouter)
+app.use(AuthRouter)
 app.use(GalleriesListRouter)
 app.use(SendEmailRouter)
 

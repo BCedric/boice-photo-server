@@ -5,6 +5,7 @@ import DB from '../shared/db.mjs'
 import { addGallery } from '../domain/galleries/galleries-functions.mjs';
 import Gallery from '../domain/galleries/Gallery.mjs';
 import { uploadFiles } from '../shared/upload-files.mjs';
+import { authMiddleware } from '../domain/auth/auth-functions.mjs';
 
 let GalleryRouter = express.Router();
 
@@ -18,7 +19,7 @@ GalleryRouter.route('/gallery/:galleryId')
     }
   })
 
-  .delete(async function (req, res) {
+  .delete(authMiddleware, async function (req, res) {
     try {
       await new Gallery(req.params.galleryId).delete()
       res.json({ galleries: await Gallery.all() })
@@ -27,7 +28,7 @@ GalleryRouter.route('/gallery/:galleryId')
     }
   })
 
-  .put(async function (req, res) {
+  .put(authMiddleware, async function (req, res) {
     const { galleryId } = req.params
     try {
       const gallery = new Gallery(galleryId)
@@ -48,7 +49,7 @@ GalleryRouter.route('/gallery/:galleryId')
 
 GalleryRouter.route('/gallery')
   // body : {name, parentId, file1, file2 ...}
-  .post(async function (req, res) {
+  .post(authMiddleware, async function (req, res) {
     try {
       const { fields, files } = await uploadFiles(req)
       await addGallery(fields, Object.values(files))

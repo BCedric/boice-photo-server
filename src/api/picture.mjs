@@ -7,6 +7,7 @@ import { addPicture } from '../domain/pictures/pictures-functions.mjs';
 import { uploadFiles } from '../shared/upload-files.mjs';
 import Picture from '../domain/pictures/Picture.mjs';
 import Gallery from '../domain/galleries/Gallery.mjs';
+import { authMiddleware } from '../domain/auth/auth-functions.mjs';
 
 var PictureRouter = express.Router();
 
@@ -29,7 +30,7 @@ PictureRouter.route('/picture/:pictureId')
     }
   })
 
-  .put(async function (req, res) {
+  .put(authMiddleware, async function (req, res) {
     try {
       await DB.run(queries.putPicture, { $name: req.query.name, $id: req.params.pictureId })
       res.json({ message: "update OK" })
@@ -38,7 +39,9 @@ PictureRouter.route('/picture/:pictureId')
     }
   })
 
-  .delete(async function (req, res) {
+
+
+  .delete(authMiddleware, async function (req, res) {
     try {
       const { pictureId } = req.params
       const picture = new Picture(pictureId)
@@ -51,7 +54,7 @@ PictureRouter.route('/picture/:pictureId')
   })
 
 PictureRouter.route('/picture')
-  .post(async function (req, res) {
+  .post(authMiddleware, async function (req, res) {
     try {
       const { fields, files } = await uploadFiles(req)
       const galleryId = parseInt(fields.galleryId)
