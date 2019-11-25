@@ -18,6 +18,7 @@ CREATE TABLE `Pictures` (
     'width'     INTEGER,
     'galleryId' INTEGER REFERENCES Galleries (id) ON DELETE CASCADE
                                                 ON UPDATE CASCADE,
+    'galleryPreview' BOOLEAN DEFAULT (false),
     FOREIGN KEY (
         'galleryId'
     )

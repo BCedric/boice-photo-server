@@ -7,13 +7,18 @@ import config from '../../utils/config.mjs'
 
 
 class Picture {
-    constructor(id, name, height, width, galleryId) {
+    constructor(id, name, height, width, galleryId, galleryPreview) {
         this.id = id
         this.addr = `/picture/${this.id}`
         this.name = name
         this.height = height
         this.width = width
         this.galleryId = galleryId
+        this.galleryPreview = galleryPreview == null
+            ? false
+            : galleryPreview === 1
+                ? true
+                : false
     }
 
 
@@ -32,6 +37,11 @@ class Picture {
                 this.height = picture.height
                 this.width = picture.width
                 this.galleryId = picture.galleryId
+                this.galleryPreview = picture.galleryPreview == null
+                    ? false
+                    : picture.galleryPreview === 1
+                        ? true
+                        : false
                 resolve(this)
             } catch (error) {
                 reject(error)
@@ -66,7 +76,17 @@ class Picture {
                 reject(error)
             }
         })
+    }
 
+    setGalleryPreview(value) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await DB.run(queries.updatePictureGalleryPreview, { $galleryPreview: value, $id: this.id })
+                resolve(this)
+            } catch (error) {
+                reject(error)
+            }
+        })
     }
 
     static all() {
@@ -76,8 +96,8 @@ class Picture {
 
                 resolve(pictures.map(
                     picture => {
-                        const { id, name, height, width, galleryId } = picture
-                        return new Picture(id, name, height, width, galleryId)
+                        const { id, name, height, width, galleryId, galleryPreview } = picture
+                        return new Picture(id, name, height, width, galleryId, galleryPreview)
                     }
                 ))
             } catch (error) {
@@ -92,8 +112,8 @@ class Picture {
                 const pictures = await DB.all(queries.getPicturesByGallery, { $galleryId: galleryId })
                 resolve(
                     pictures.map(picture => {
-                        const { id, name, height, width, galleryId } = picture
-                        return new Picture(id, name, height, width, galleryId)
+                        const { id, name, height, width, galleryId, galleryPreview } = picture
+                        return new Picture(id, name, height, width, galleryId, galleryPreview)
                     })
                 )
             } catch (error) {

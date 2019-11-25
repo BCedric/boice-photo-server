@@ -41,8 +41,8 @@ class Gallery {
                 const galleryPictures = await Picture.picturesFromGallery(this.id)
                 await Promise.all(galleryPictures.map(picture => new Promise(async (resolve, reject) => {
                     try {
-                        const { id, name, height, width, galleryId } = picture
-                        await new Picture(id, name, height, width, galleryId).delete()
+                        const { id, name, height, width, galleryId, galleryPreview } = picture
+                        await new Picture(id, name, height, width, galleryId, galleryPreview).delete()
                         resolve(null)
                     } catch (error) {
                         reject(error)
