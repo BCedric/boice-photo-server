@@ -30,7 +30,7 @@ PictureRouter.route('/picture/:pictureId')
     }
   })
 
-  .put(async function (req, res) {
+  .put(authMiddleware, async function (req, res) {
     try {
       const picture = await new Picture(req.params.pictureId).init()
       if (picture.galleryId != null) {
@@ -40,7 +40,8 @@ PictureRouter.route('/picture/:pictureId')
           await oldPictureGalleryPreview.setGalleryPreview(false)
         }
         await picture.setGalleryPreview(req.body.galleryPreview)
-        res.json({ message: "update OK" })
+        await gallery.init()
+        res.json({ gallery })
       } else {
         throw 'La photo n\'est pas dans une galerie'
       }

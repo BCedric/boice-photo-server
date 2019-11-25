@@ -15,10 +15,11 @@ class GalleriesList {
                 this.galleries = await Promise.all(galleriesChildren.map(async child => {
 
                     const { id, name, description, parentId } = child
+                    const galleryPreview = await DB.get(queries.getPreviewPicture, { $galleryId: id })
                     const randPicture = await DB.get(queries.getRandomPictureFromGallery, { $id: id })
                     const gallery = await new Gallery(id, name, description, parentId)
 
-                    return { ...gallery, randPicture: randPicture != null && `/picture/${randPicture.id}` }
+                    return { ...gallery, galleryPreview: `/picture/${galleryPreview != null ? galleryPreview.id : randPicture != null ? randPicture.id : null}` }
                 }))
 
                 this.name = galleriesList.name

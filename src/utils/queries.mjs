@@ -5,6 +5,7 @@ const queries = {
   deletePicture: "DELETE FROM Pictures WHERE id = $id",
   postPicture: "INSERT INTO Pictures (name, width, height, galleryId) VALUES ($name, $width, $height, $galleryId);",
   allPictures: "SELECT * FROM Pictures",
+  getPreviewPicture: "SELECT * FROM Pictures WHERE galleryId = $galleryId AND galleryPreview = true",
   updatePictureGalleryPreview: "UPDATE Pictures SET galleryPreview = $galleryPreview WHERE id = $id",
   deleteTable: (table) => "DROP TABLE " + table + ";",
   createTablePictures: "CREATE TABLE `Pictures` (`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`name`	TEXT,`height`	INTEGER,`width`	INTEGER,'galleryId' INTEGER REFERENCES Galleries (id) ON DELETE CASCADE ON UPDATE CASCADE,'galleryPreview' BOOLEAN DEFAULT (false), FOREIGN KEY(`galleryId`) REFERENCES `Galleries`(`id`));",
