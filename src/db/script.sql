@@ -5,7 +5,8 @@ CREATE TABLE `Galleries` (
                         UNIQUE,
     'description' TEXT,
     'parentId'    INTEGER,
-    'isList'      BOOLEAN
+    'isList'      BOOLEAN DEFAULT (false),
+    'isInCarousel' BOOLEAN DEFAULT (false)
 );
 
 

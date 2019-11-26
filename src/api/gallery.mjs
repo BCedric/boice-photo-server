@@ -32,13 +32,16 @@ GalleryRouter.route('/gallery/:galleryId')
     const { galleryId } = req.params
     try {
       const gallery = new Gallery(galleryId)
-      const { name, description } = req.body
+      const { name, description, isInCarousel } = req.body
 
       if (name != null && name !== '') {
         await gallery.setName(name)
       }
       if (description != null && description !== '') {
         await gallery.setDescription(description)
+      }
+      if (isInCarousel != null && isInCarousel !== '') {
+        await gallery.setIsInCarousel(isInCarousel)
       }
       const updatedGallery = await new Gallery(galleryId).init()
       res.json({ gallery: updatedGallery })
@@ -89,6 +92,18 @@ GalleryRouter.route('/navgalleries')
       const galleries = await DB.all(queries.getGalleriesNotInLists)
       res.json({
         galleriesLists,
+        galleries
+      })
+    } catch (err) {
+      res.json({ err })
+    }
+  })
+
+GalleryRouter.route('/carouselgalleries')
+  .get(async (req, res) => {
+    try {
+      const galleries = await Gallery.carouselGalleries()
+      res.json({
         galleries
       })
     } catch (err) {

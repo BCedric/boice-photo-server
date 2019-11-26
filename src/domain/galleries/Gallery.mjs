@@ -7,11 +7,12 @@ import config from '../../utils/config.mjs'
 import Picture from '../pictures/Picture.mjs';
 
 class Gallery {
-    constructor(id, name, description, parentId) {
+    constructor(id, name, description, parentId, isInCarousel) {
         this.id = parseInt(id)
         this.name = name
         this.description = description
         this.parentId = parentId
+        this.isInCarousel = isInCarousel === 1 ? true : false
     }
 
     init() {
@@ -22,6 +23,7 @@ class Gallery {
                     this.name = gallery.name
                     this.description = gallery.description
                     this.parentId = gallery.parentId
+                    this.isInCarousel = gallery.isInCarousel === 1 ? true : false
                     this.pictures = await Picture.picturesFromGallery(this.id)
                 }
                 else reject("la galerie n'existe pas")
@@ -95,12 +97,43 @@ class Gallery {
         })
     }
 
+    setIsInCarousel(isInCarousel) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (this.name == null) {
+                    await this.init()
+                }
+                await DB.run(queries.updateGalleryIsInCarousel, { $isInCarousel: isInCarousel, $id: this.id })
+                resolve(this)
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
     static all() {
         return new Promise(async (resolve, reject) => {
             try {
                 const galleries = await DB.all(queries.allGalleries)
                 resolve(await Promise.all(galleries.map(
                     async gallery => await new Gallery(gallery.id).init()
+                )))
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
+    static carouselGalleries() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const galleries = await DB.all(queries.getCarouselGalleries)
+                resolve(await Promise.all(galleries.map(
+                    async gallery => {
+                        const galleryPreview = await DB.get(queries.getPreviewPicture, { $galleryId: gallery.id })
+                        const randPicture = await DB.get(queries.getRandomPictureFromGallery, { $id: gallery.id })
+                        return { ...gallery, galleryPreview: `/picture/${galleryPreview != null ? galleryPreview.id : randPicture != null ? randPicture.id : null}` }
+                    }
                 )))
             } catch (error) {
                 reject(error)
