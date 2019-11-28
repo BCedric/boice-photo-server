@@ -28,8 +28,8 @@ AuthRouter.route(`/auth`)
                         }
                         return auth
                     })
-                const userUpdated = await DB.get(queries.getUser, { $name: login })
-                res.json({ user: userUpdated })
+                user.token = token
+                res.json({ user })
             } else {
                 throw 'erreur d\'authentification'
             }
