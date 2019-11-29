@@ -1,8 +1,4 @@
-const config = {
-  imageFolder: "D:/Dev/boice-photo-server/img", //absolute path
-  // imageFolder: "/media/pi/FRANCISSAVE/boice-photo-server/img/" //piPath
-  dbFile: "boicephoto.sqlite",
-  privateKey: "tu memmerdes"
-}
+import prodConfig from '../../env/prod-config.mjs'
+import devConfig from '../../env/dev-config.mjs'
 
-export default config
+export default process.env.ALWAYSDATA_HTTPD_PORT != null ? prodConfig : devConfig

@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "deploy": "npm install --only=prod",
     "webpack": "webpack",
     "startt": "http-server",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "gulp build",
+    "prod": "node --experimental-modules src/index.mjs",
     "start": "nodemon --experimental-modules src/index.mjs"
   },
   "keywords": [],
@@ -22,7 +24,6 @@
     "images-upload-middleware": "^1.1.1",
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^4.4.0",
-    "pump": "^1.0.3",
     "request": "^2.83.0",
     "sqlite3": "^4.1.0"
   },
