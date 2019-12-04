@@ -1,52 +1,58 @@
 import express from 'express'
+import fetch from 'node-fetch'
 import nodemailer from 'nodemailer'
-import request from 'request'
 
 import config from '../utils/config'
+import { uploadFiles } from '../shared/upload-files.mjs';
 
 let SendEmailRouter = express.Router();
 
-const secretKey = '6LfNfjoUAAAAAP8XWyo1-lyspeqsa1AyyydzT2-P'
-
 SendEmailRouter.route('/sendemail')
-  .post(function (req, res) {
-    const { nom, prenom, email, message, sujet } = req.body
+  .post(async function (req, res) {
 
-    var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
-    request(verificationUrl, function (error, response, body) {
-      body = JSON.parse(body);
-      console.log(req.connection.remoteAddress);
-      // Success will be true or false depending upon captcha validation.
-      if (body.success !== undefined && !body.success) {
-        let transporter = nodemailer.createTransport({
-          service: "Gmail",
-          auth: {
-            user: config.addressMail,
-            pass: config.passMail
-          }
-        });
-        let mail = {
-          from: `Boice Photo <${config.addressMail}>`, // sender address
-          to: 'bois.cedric2303@gmail.com', // list of receivers
-          subject: `Boice Photo -  De ${nom} ${prenom} - ${sujet}`, // Subject line
-          text: message, // plain text body
-          html:
-            `<p>Message de ${nom} ${prenom} (${email})</p>`
-            + `<p>${message}</p>` // html body
-        };
+    const { fields } = await uploadFiles(req)
+    const { lastName, firstName, email, message, object, captchaToken } = fields
 
-        transporter.sendMail(mail, function (error, response) {
-          if (error) {
-            console.log("Erreur lors de l'envoie du mail!");
-            return res.send(error);
+    try {
+      fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${config.captchaSecretKey}&response=${fields.captchaToken}`, {
+        method: 'POST',
+        body: {
+          secret: config.captchaSecretKey,
+          response: captchaToken
+        }
+      })
+        .then(async res => await res.json())
+        .then(async json => {
+          if (json.success) {
+            const transporter = nodemailer.createTransport({
+              host: config.mail.smtp,
+              secure: false,
+              auth: {
+                user: config.mail.user,
+                pass: config.mail.pass
+              }
+            });
+
+            let mail = {
+              from: `Boice Photo <${config.mail.user}>`,
+              to: config.mail.mailTo,
+              subject: `Boice Photo -  De ${lastName} ${firstName} - ${object}`,
+              text: message,
+              html:
+                `<p>Message de ${lastName} ${firstName} (${email})</p>`
+                + `<p>${message}</p>`
+            };
+
+            await transporter.sendMail(mail)
+            res.json({ msg: 'envoie du mail avec succès' });
           } else {
-            return res.json({ "responseCode": 1, "responseDesc": "Failed captcha verification" });
+            throw json['error-codes']
           }
-          transporter.close();
         })
-      }
-      res.json({ "responseCode": 0, "responseDesc": "Sucess" });
-    });
+    } catch (err) {
+      res.json(err)
+    }
+
   });
 
 
