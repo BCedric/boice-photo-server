@@ -89,10 +89,33 @@ GalleryRouter.route('/navgalleries')
   .get(async (req, res) => {
     try {
       const galleriesLists = await DB.all(queries.allGalleriesLists)
+      const galleriesListsPictures = await DB.all(queries.getGalleriesListsPreviewPictures)
+
+      const galleriesListWithPicture = await Promise.all(galleriesLists.map(async galleriesList => {
+        return new Promise(async (resolve, reject) => {
+          const picture = galleriesListsPictures.find(galleriesListsPicture => galleriesListsPicture.galleriesListId === galleriesList.id)
+          if (picture != null) {
+            galleriesList.picture = picture
+          } else {
+            galleriesList.picture = await DB.get(queries.getRandomPictureFromGalleriesList, { $id: galleriesList.id })
+          }
+          resolve(galleriesList)
+        })
+      }))
+
       const galleries = await DB.all(queries.getGalleriesNotInLists)
+      const galleriesWithPicture = await Promise.all(galleries.map(async gallery => {
+        const picture = await DB.get(queries.getPreviewPicture, { $galleryId: gallery.id })
+        if (picture != null) {
+          gallery.picture = picture
+        } else {
+          gallery.picture = await DB.get(queries.getRandomPictureFromGallery, { $id: gallery.id })
+        }
+        return gallery
+      }))
       res.json({
-        galleriesLists,
-        galleries
+        galleriesLists: galleriesListWithPicture,
+        galleries: galleriesWithPicture
       })
     } catch (err) {
       res.json({ err })
