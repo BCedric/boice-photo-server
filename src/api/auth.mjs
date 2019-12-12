@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken'
 
 import config from '../utils/config.mjs'
 import DB from '../shared/db.mjs'
-import { generateAuthToken } from '../domain/auth/auth-functions.mjs';
+import { generateAuthToken } from '../domain/auth/auth-functions.mjs'
+import { authMiddleware } from '../domain/auth/auth-functions'
 
 let AuthRouter = express.Router();
 
@@ -58,5 +59,18 @@ AuthRouter.route(`/logout`)
             res.json({ err })
         }
     })
+
+AuthRouter.route(`/refresh`)
+    .put(authMiddleware, async function (req, res) {
+        try {
+            const { user } = req.body
+            const token = generateAuthToken(user)
+            res.json({ token })
+        } catch (err) {
+            res.json({ err })
+        }
+    })
+
+
 
 export default AuthRouter
