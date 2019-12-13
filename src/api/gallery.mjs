@@ -93,13 +93,17 @@ GalleryRouter.route('/navgalleries')
 
       const galleriesListWithPicture = await Promise.all(galleriesLists.map(async galleriesList => {
         return new Promise(async (resolve, reject) => {
-          const picture = galleriesListsPictures.find(galleriesListsPicture => galleriesListsPicture.galleriesListId === galleriesList.id)
-          if (picture != null) {
-            galleriesList.picture = picture
-          } else {
-            galleriesList.picture = await DB.get(queries.getRandomPictureFromGalleriesList, { $id: galleriesList.id })
+          try {
+            const picture = galleriesListsPictures.find(galleriesListsPicture => galleriesListsPicture.galleriesListId === galleriesList.id)
+            if (picture != null) {
+              galleriesList.picture = picture
+            } else {
+              galleriesList.picture = await DB.get(queries.getRandomPictureFromGalleriesList, { $id: galleriesList.id })
+            }
+            resolve(galleriesList)
+          } catch (err) {
+            reject(err)
           }
-          resolve(galleriesList)
         })
       }))
 
