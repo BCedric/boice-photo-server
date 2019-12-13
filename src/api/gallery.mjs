@@ -15,7 +15,7 @@ GalleryRouter.route('/gallery/:galleryId')
       const gallery = new Gallery(req.params.galleryId)
       res.json(await gallery.init())
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 
@@ -24,7 +24,7 @@ GalleryRouter.route('/gallery/:galleryId')
       await new Gallery(req.params.galleryId).delete()
       res.json({ galleries: await Gallery.all() })
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 
@@ -46,7 +46,7 @@ GalleryRouter.route('/gallery/:galleryId')
       const updatedGallery = await new Gallery(galleryId).init()
       res.json({ gallery: updatedGallery })
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 
@@ -70,7 +70,7 @@ GalleryRouter.route('/galleries')
         galleries: await Gallery.all()
       })
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 
@@ -81,7 +81,7 @@ GalleryRouter.route('/galleriesnotinlists')
         galleries: await DB.all(queries.getGalleriesNotInLists)
       })
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 
@@ -118,7 +118,7 @@ GalleryRouter.route('/navgalleries')
         galleries: galleriesWithPicture
       })
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 
@@ -130,7 +130,7 @@ GalleryRouter.route('/carouselgalleries')
         galleries
       })
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 

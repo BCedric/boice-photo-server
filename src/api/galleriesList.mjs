@@ -49,7 +49,7 @@ GalleriesListRouter.route('/gallerieslist/addGallery/:gallerieslist')
 
       res.json(galleriesList)
     } catch (err) {
-      res; json({ err })
+      res; json({ err: err.toString() })
     }
   })
 
@@ -62,7 +62,7 @@ GalleriesListRouter.route('/gallerieslist/removeGallery/:gallerieslist')
 
       res.json(galleriesList)
     } catch (err) {
-      res; json({ err })
+      res; json({ err: err.toString() })
     }
   })
 
@@ -82,7 +82,7 @@ GalleriesListRouter.route('/gallerieslist')
       })
       res.json(await GalleriesList.all())
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 

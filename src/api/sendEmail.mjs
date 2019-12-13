@@ -50,7 +50,7 @@ SendEmailRouter.route('/sendemail')
           }
         })
     } catch (err) {
-      res.json(err)
+      res.json({ err: err.toString() })
     }
 
   });

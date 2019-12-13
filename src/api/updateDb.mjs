@@ -92,7 +92,7 @@ UpdateDbRouter.route('/updatedb')
       await readFilesSaveDB(config.imageFolder)
       res.json({ update: 'OK' });
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 

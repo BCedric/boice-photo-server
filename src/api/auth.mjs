@@ -35,7 +35,7 @@ AuthRouter.route(`/auth`)
                 throw 'erreur d\'authentification'
             }
         } catch (err) {
-            res.json({ err })
+            res.json({ err: err.toString() })
         }
     })
 
@@ -46,7 +46,7 @@ AuthRouter.route(`/checkauth`)
             const decoded = jwt.verify(token, config.privateKey);
             res.json({ decoded })
         } catch (err) {
-            res.json({ err })
+            res.json({ err: err.toString() })
         }
     })
 
@@ -54,9 +54,9 @@ AuthRouter.route(`/logout`)
     .put(async function (req, res) {
         try {
             await DB.run(queries.updateUserToken, { $id: req.body.id })
-            res.json({ msg: 'coucou ' })
+            res.json({ msg: 'logout ok' })
         } catch (err) {
-            res.json({ err })
+            res.json({ err: err.toString() })
         }
     })
 
@@ -67,7 +67,7 @@ AuthRouter.route(`/refresh`)
             const token = generateAuthToken(user)
             res.json({ token })
         } catch (err) {
-            res.json({ err })
+            res.json({ err: err.toString() })
         }
     })
 

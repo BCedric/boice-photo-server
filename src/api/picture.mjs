@@ -26,7 +26,7 @@ PictureRouter.route('/picture/:pictureId')
       const picture = await new Picture(req.params.pictureId).init()
       res.sendFile(picture.address, options)
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 
@@ -93,7 +93,7 @@ PictureRouter.route('/pictures')
       const pictures = await Picture.all()
       res.json({ pictures })
     } catch (err) {
-      res.json({ err })
+      res.json({ err: err.toString() })
     }
   })
 
