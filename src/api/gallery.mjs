@@ -118,8 +118,8 @@ GalleryRouter.route('/navgalleries')
         return gallery
       }))
       res.json({
-        galleriesLists: galleriesListWithPicture,
-        galleries: galleriesWithPicture
+        galleriesLists: galleriesListWithPicture.reverse(),
+        galleries: galleriesWithPicture.reverse()
       })
     } catch (err) {
       res.json({ err: err.toString() })

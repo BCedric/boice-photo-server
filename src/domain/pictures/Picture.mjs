@@ -94,7 +94,7 @@ class Picture {
             try {
                 const pictures = await DB.all(queries.allPictures)
 
-                resolve(pictures.map(
+                resolve(pictures.reverse().map(
                     picture => {
                         const { id, name, height, width, galleryId, galleryPreview } = picture
                         return new Picture(id, name, height, width, galleryId, galleryPreview)

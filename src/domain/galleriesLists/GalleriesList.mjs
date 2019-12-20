@@ -12,7 +12,7 @@ class GalleriesList {
             try {
                 const galleriesList = await DB.get(queries.getGallery, { $id: this.id })
                 const galleriesChildren = await DB.all(queries.getGalleriesListChildren, { $parentId: this.id })
-                this.galleries = await Promise.all(galleriesChildren.map(async child => {
+                this.galleries = await Promise.all(galleriesChildren.reverse().map(async child => {
 
                     const { id, name, description, parentId } = child
                     const galleryPreview = await DB.get(queries.getPreviewPicture, { $galleryId: id })

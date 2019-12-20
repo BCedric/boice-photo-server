@@ -128,7 +128,7 @@ class Gallery {
         return new Promise(async (resolve, reject) => {
             try {
                 const galleries = await DB.all(queries.getCarouselGalleries)
-                resolve(await Promise.all(galleries.map(
+                resolve(await Promise.all(galleries.reverse().map(
                     async gallery => {
                         const galleryPreview = await DB.get(queries.getPreviewPicture, { $galleryId: gallery.id })
                         const randPicture = await DB.get(queries.getRandomPictureFromGallery, { $id: gallery.id })
