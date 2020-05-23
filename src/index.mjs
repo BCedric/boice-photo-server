@@ -26,5 +26,5 @@ app.use(baseURL, AuthRouter)
 app.use(baseURL, GalleriesListRouter)
 app.use(baseURL, SendEmailRouter)
 
-app.listen(port, process.env.ALWAYSDATA_HTTPD_IP)
+app.listen(port, process.env.IP)
 console.log(`listenning on port ${port}`);
